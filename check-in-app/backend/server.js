@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
+
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject';
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
@@ -43,9 +44,9 @@ userSchema.pre('save', async function (next) {
     return next();
   }
   const salt = bcrypt.genSaltSync();
-  console.log(`PRE-password before hash: ${user.password}`)
+  console.log(`PRE- password before hash: ${user.password}`);
   user.password = bcrypt.hashSync(user.password, salt);
-  console.log(`PRE-password after hash: ${user.password}`)
+  console.log(`PRE- password after  hash: ${user.password}`);
   next();
 })
 
@@ -75,7 +76,7 @@ const Attendant = mongoose.model('Attendant', {
   attendantEmail: {
     type: String,
     required: true,
-    unique: true
+    // unique: true
   },
   department: {
     type: String
@@ -86,6 +87,7 @@ const Attendant = mongoose.model('Attendant', {
 const port = process.env.PORT || 8080;
 const app = express();
 const endPointList = require('express-list-endpoints');
+const QRCode = require('qrcode')
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -113,13 +115,14 @@ app.use((req, res, next) => {
 
 // Signup a user
 app.post('/api/signup', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+  //what is the difference btw putting this const inside the try{}
+  const { name, email, password } = req.body;
+  try {  
     const user = await new User({
       name,
       email,
       password
-    }).save();
+    }).save()
     res.status(201)
     .json({ userId: user._id, accessToken: user.accessToken })
   } catch (err) {
@@ -131,12 +134,14 @@ app.post('/api/signup', async (req, res) => {
 
 // Login user
 app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+  console.log('body', typeof req.body);
+  console.log( "email-password", email, password )
   try {
-    const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user && bcrypt.compareSync(password, user.password)) {
-      res.status(201).json({ userId: user._id, accessToken: user.accessToken });
-      console.log("accessToken-backend", accessToken)
+      console.log(user._id, user.accessToken)
+      res.status(200).json({ userId: user._id, accessToken: user.accessToken })
     } else {
       res.status(404).json({
         notFound: true,
@@ -144,6 +149,7 @@ app.post('/api/login', async (req, res) => {
       });
     }
   } catch (err) {
+    console.log( "ERROR", err)
     res.status(404).json({
       notFound: true,
       message: 'Oops! Something goes wrong. Try again later!'
@@ -154,19 +160,54 @@ app.post('/api/login', async (req, res) => {
 // attendant registration form
 app.post('/api/users/:id/registration', authenticateUser);
 app.post('/api/users/:id/registration', async (req, res) => {
-  const { attendantName, department, attendantEmail } = req.body
-  try {
-    const newAttendant = await new Attendant ({
-      attendantName,
-      department,
-      attendantEmail
-    }).save()
-    res.status(201).json(newAttendant)
+  console.log('req.body', req.body);
+  const { attendantName, attendantEmail, department } = req.body
+try {
+  const newAttendant = await new Attendant({
+    attendantName,
+    attendantEmail,
+    department
+  }).save(newAttendant)
+  res.status(201).json(newAttendant)
   } catch (err) {
+    console.log("error", err)
     res.status(400).json({message: 'Could not save new attendant', error: err.errors})
   }
 })
 
+app.get('/api/:attendantId/qrcode', async (req, res) => {
+  const { attendantId } = req.params
+  console.log(attendantId, "attendantId")
+  
+  try {
+    const attendant = await Attendant.findById(attendantId)
+
+    if (attendant.errors) {
+      res.status(404).json({message: 'Could not find any attendant that matches the information', error: error.message})
+    }
+    
+    console.log(attendantId, "attendantid")
+    const url = `http://localhost:3000/check-in/${attendantId}`;
+    console.log("URL", url)
+    // const url = "testing url"
+    // const url = "https://vnexpress.net/"
+    const qrCode = await QRCode.toDataURL(url, {
+      errorCorrectionLevel: 'H'
+    })
+
+    if (!qrCode) {
+      throw new Error('Could not generate qr');
+      //res.status(404).json({message: 'Could not find any attendant that matches the information', error: err. errors})
+    }
+      
+    console.log("qrCode", qrCode)
+    
+    res.json(qrCode)
+  } catch (err) {
+    console.log(err, "ERROR")
+    res.status(400).json({ message: err.message })
+  }
+})
 
 // Start the server
 app.listen(port, () => {

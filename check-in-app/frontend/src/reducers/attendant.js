@@ -110,10 +110,26 @@ export const qrCodeGenerator = () => {
 }  
 
 export const checkin = () => {
-  return (dispatch) => {
-    dispatch(attendant.actions.setCheckin({
-      checkin: true
-    }))
+  const CHECKIN_URL = 'http://localhost:3000/checkin/'
+  
+  return (dispatch, getState) => {
+    const attendantId = getState().attendant.attendant.attendantId
+    
+    fetch ( `${CHECKIN_URL}/${attendantId}`, {
+      method: 'GET',
+      headers: { 'Content-Type' : 'application/json'}
+    })
+    .then((res) => {
+      if (res.ok) {
+        return res.json()
+      }
+      throw new Error ('Could not match the QR code')
+    })
+    .then((json) => {
+      dispatch(attendant.actions.setCheckin({
+        checkin: true
+      }))
+    })
   }
 }
 

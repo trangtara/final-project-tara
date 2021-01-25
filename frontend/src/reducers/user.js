@@ -33,7 +33,7 @@ export const user = createSlice({
 })
 
 export const signup = (name, email, password) => {
-  const SIGNUP_URL = 'http://localhost:8080/api/signup'
+  const SIGNUP_URL = 'https://event-check-in-app.herokuapp.com/api/signup'
   return (dispatch) => {
     fetch(SIGNUP_URL, {
       method: 'POST',
@@ -62,7 +62,7 @@ export const signup = (name, email, password) => {
 }
 
 export const login = (email, password) => {
-  const LOGIN_URL = 'http://localhost:8080/api/login'
+  const LOGIN_URL = 'https://event-check-in-app.herokuapp.com/api/login'
   return (dispatch) => {
     fetch (LOGIN_URL, {
       method: 'POST',

@@ -80,6 +80,12 @@ const Attendant = mongoose.model('Attendant', {
   },
   department: {
     type: String
+  },
+  qrCode: {
+    type: String
+  },
+  checkin: {
+    type: Boolean
   }
 })
 
@@ -189,20 +195,30 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
     console.log(attendantId, "attendantid")
     const url = `http://localhost:3000/check-in/${attendantId}`;
     console.log("URL", url)
-    // const url = "testing url"
-    // const url = "https://vnexpress.net/"
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
     })
-
-    if (!qrCode) {
-      throw new Error('Could not generate qr');
-      //res.status(404).json({message: 'Could not find any attendant that matches the information', error: err. errors})
-    }
-      
-    console.log("qrCode", qrCode)
     
-    res.json(qrCode)
+    if(!qrCode) {
+      throw new Error ('Could not generate qr code')
+    }
+
+    const updatedAttendant = await Attendant.updateOne({ _id: attendantId}, {$set: {qrCode: qrCode}})
+    console.log("updatedAttendant", updatedAttendant)
+
+    if (!updatedAttendant) {
+      throw new Error ('Could not save qr code to the database')
+    }
+    res.json(updatedAttendant)
+
+    // if (!qrCode) {
+    //   throw new Error('Could not generate qr');
+    //   //res.status(404).json({message: 'Could not find any attendant that matches the information', error: err. errors})
+    // }
+      
+    // console.log("qrCode", qrCode)
+    
+    // res.json(qrCode)
   } catch (err) {
     console.log(err, "ERROR")
     res.status(400).json({ message: err.message })

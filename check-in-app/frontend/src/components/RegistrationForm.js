@@ -19,12 +19,12 @@ const RegistrationForm = () => {
     event.preventDefault()
     dispatch(registration(attendantName, department, attendantEmail))
   }
+  //What to do with the []
   useEffect(() => {
     if (successfulRegistration) {
-      console.log('dispatch qrcode')
       dispatch(qrCodeGenerator())
     }
-  })
+  }, [successfulRegistration])
 
   return (
     <div>

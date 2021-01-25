@@ -97,13 +97,11 @@ export const qrCodeGenerator = () => {
       return res.json()
     })
     .then((json) => {
-      console.log('qrCodeGenerator json', json)
       dispatch(attendant.actions.setQrCode({
         qrCode: json
       }))
     })
     .catch((err) => {
-      console.log(err, "ERROR")
       dispatch(attendant.actions.setErrorMessage({ errorMessage: err}))
     })
   }

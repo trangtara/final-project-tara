@@ -68,6 +68,15 @@ const authenticateUser = async (req, res, next) => {
 
 const User = mongoose.model('User', userSchema );
 
+const CheckinSchema = mongoose.Schema ({
+  checkin: {
+    type: Boolean,
+  },
+  checkinTime: {
+    type: Date,
+    default: Date.now
+  }
+})
 const Attendant = mongoose.model('Attendant', {
   attendantName: {
     type: String,
@@ -81,11 +90,16 @@ const Attendant = mongoose.model('Attendant', {
   department: {
     type: String
   },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
   qrCode: {
     type: String
   },
   checkin: {
-    type: Boolean
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CheckinSchema'
   }
 })
 
@@ -141,12 +155,9 @@ app.post('/api/signup', async (req, res) => {
 // Login user
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('body', typeof req.body);
-  console.log( "email-password", email, password )
   try {
     const user = await User.findOne({ email });
     if (user && bcrypt.compareSync(password, user.password)) {
-      console.log(user._id, user.accessToken)
       res.status(200).json({ userId: user._id, accessToken: user.accessToken })
     } else {
       res.status(404).json({
@@ -155,7 +166,6 @@ app.post('/api/login', async (req, res) => {
       });
     }
   } catch (err) {
-    console.log( "ERROR", err)
     res.status(404).json({
       notFound: true,
       message: 'Oops! Something goes wrong. Try again later!'
@@ -166,7 +176,6 @@ app.post('/api/login', async (req, res) => {
 // attendant registration form
 app.post('/api/users/:id/registration', authenticateUser);
 app.post('/api/users/:id/registration', async (req, res) => {
-  console.log('req.body', req.body);
   const { attendantName, attendantEmail, department } = req.body
 try {
   const newAttendant = await new Attendant({
@@ -176,14 +185,12 @@ try {
   }).save(newAttendant)
   res.status(201).json(newAttendant)
   } catch (err) {
-    console.log("error", err)
     res.status(400).json({message: 'Could not save new attendant', error: err.errors})
   }
 })
 
 app.get('/api/:attendantId/qrcode', async (req, res) => {
   const { attendantId } = req.params
-  console.log(attendantId, "attendantId")
   
   try {
     const attendant = await Attendant.findById(attendantId)
@@ -192,9 +199,7 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
       res.status(404).json({message: 'Could not find any attendant that matches the information', error: error.message})
     }
     
-    console.log(attendantId, "attendantid")
     const url = `http://localhost:3000/check-in/${attendantId}`;
-    console.log("URL", url)
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
     })
@@ -209,7 +214,7 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
     if (!updatedAttendant) {
       throw new Error ('Could not save qr code to the database')
     }
-    res.json(updatedAttendant)
+    res.status(201).json(qrCode)
 
     // if (!qrCode) {
     //   throw new Error('Could not generate qr');

@@ -137,15 +137,18 @@ app.use((req, res, next) => {
 app.post('/api/signup', async (req, res) => {
   //what is the difference btw putting this const inside the try{}
   const { name, email, password } = req.body;
+  console.log("REQBody", req.body)
   try {  
     const user = await new User({
       name,
       email,
       password
     }).save()
+    console.log("newUser", user)
     res.status(201)
     .json({ userId: user._id, accessToken: user.accessToken })
   } catch (err) {
+    console.log("ERROR", err)
     res
       .status(400)
       .json({ message: 'Could not create user', errors: err.errors });

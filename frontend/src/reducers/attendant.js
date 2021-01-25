@@ -108,7 +108,7 @@ export const qrCodeGenerator = () => {
 }  
 
 export const checkin = () => {
-  const CHECKIN_URL = 'http://localhost:3000/checkin/'
+  const CHECKIN_URL = 'https://eventcheckin.netlify.app/checkin'
   
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId

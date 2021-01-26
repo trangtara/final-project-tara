@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import { attendant } from '../../../check-in-app/frontend/src/reducers/attendant'
 
 import { checkin } from '../reducers/attendant'
 
@@ -29,7 +30,7 @@ const Checkin = () => {
   })
   
   const handleCheckin = () => {
-    dispatch(checkin())
+    dispatch(checkin(attendantId))
   }
 
   return (

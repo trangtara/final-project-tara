@@ -24,7 +24,7 @@ const RegistrationForm = () => {
     if (successfulRegistration) {
       dispatch(qrCodeGenerator())
     }
-  }, [successfulRegistration])
+  })
 
   return (
     <div>

@@ -201,7 +201,7 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
     if (attendant.errors) {
       res.status(404).json({message: 'Could not find any attendant that matches the information', error: error.message})
     }
-    
+    // const url='http://localhost:3000/checkin/600ebf8c5f9c44416b4b3f29'
     const url = `https://eventcheckin.netlify.app/checkin/${attendantId}`;
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
@@ -230,6 +230,25 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
   } catch (err) {
     console.log(err, "ERROR")
     res.status(400).json({ message: err.message })
+  }
+})
+
+app.post('/api/checkin/:attendantId', async (req, res) => {
+  const { attendantId } = req.params
+  try {
+    const checkin = await Attendant.updateOne({ _id: attendantId }, {
+      $set:
+      { checkin: true}
+    })
+    if (!checkin) {
+      throw new Error ('Could not checkin')
+    }
+    res.status(201).json(checkin)
+
+  }
+  catch (err) {
+    console.log(err, "ERROR")
+    res.status(404).json({ errorMessage: err.errors})
   }
 })
 

@@ -108,20 +108,20 @@ export const qrCodeGenerator = () => {
 }  
 
 export const checkin = () => {
-  const CHECKIN_URL = 'https://eventcheckin.netlify.app/checkin'
+  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
   
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId
     
     fetch ( `${CHECKIN_URL}/${attendantId}`, {
-      method: 'GET',
+      method: 'POST',
       headers: { 'Content-Type' : 'application/json'}
     })
     .then((res) => {
       if (res.ok) {
         return res.json()
       }
-      throw new Error ('Could not match the QR code')
+      throw new Error ('Could not find the attendant')
     })
     .then((json) => {
       dispatch(attendant.actions.setCheckin({

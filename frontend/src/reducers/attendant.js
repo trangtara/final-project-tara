@@ -125,8 +125,6 @@ export const qrCodeGenerator = () => {
   }
 }  
 
-
-
 export const checkin = ({ attendantId }) => {
   const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
   
@@ -138,15 +136,9 @@ export const checkin = ({ attendantId }) => {
       headers: { 'Content-Type' : 'application/json'}
     })
     .then((res) => {
-      if (res.ok) {
-        return res.json()
+      if (!res.ok) {
+        throw new Error ('Could not find the attendant')
       }
-      throw new Error ('Could not find the attendant')
-    })
-    .then((json) => {
-      dispatch(attendant.actions.setCheckin({
-        checkin: true
-      }))
     })
   }
 }

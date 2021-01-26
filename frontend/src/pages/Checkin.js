@@ -8,7 +8,7 @@ const Checkin = () => {
   const { attendantId } = useParams()
   const dispatch = useDispatch()
 
-  fetch(`https://event-check-in-app.herokuapp.com/api/${attendantId}`)
+  fetch(`https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`)
   .then((res) => {
     console.log('res', res);
     if (res.ok) {

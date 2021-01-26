@@ -1,24 +1,38 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import { checkin } from '../reducers/attendant'
 
 const Checkin = () => {
+  const { attendantId } = useParams()
   const dispatch = useDispatch()
 
-  const checkinName = useSelector((store) => store.attendant.attendant.attendantName)
-  console.log(checkinName, "checkinName")
-  const checkinDept = useSelector((store) => store.attendant.attendant.department)
-  console.log(checkinDept, "checkinDept")
-
+  fetch(`https://event-check-in-app.herokuapp.com/api/${attendantId}`)
+  .then((res) => {
+    console.log('res', res);
+    if (res.ok) {
+      return res.json()
+    }
+    throw new Error('Could not find attendant')
+  })
+  .then((json) => {
+    console.log('JSON', json);
+    return json;
+  })
+  .catch((err) => {
+    console.log('ERROR', err)
+  })
+  
   const handleCheckin = () => {
     dispatch(checkin())
   }
+
   return (
     <div>
       <h2>Check-in information</h2>
-      <p>Name: {checkinName} </p>
-      <p>Department: {checkinDept}</p>
+      <p>Name: </p>
+      <p>Department:</p>
       <button
       type="submit"
       onClick={handleCheckin}>

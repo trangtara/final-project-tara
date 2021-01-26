@@ -40,6 +40,24 @@ export const attendant = createSlice({
   
   }
 })
+
+// export const getAttendant = ({ attendantId }) => {
+//   return fetch(`api/attendant/${attendantId}`)
+//     .then((res) => {
+//       if (res.ok) {
+//         return res.json()
+//       }
+//       throw new Error('Could not find attendant')
+//     })
+//     .then((json) => {
+//       console.log('JSON', json);
+//       return json;
+//     })
+//     .catch((err) => {
+//       console.log('ERROR', err)
+//     })
+// }
+
 export const registration = (attendantName, department, attendantEmail) => {
   const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
   return (dispatch, getState) => {
@@ -107,11 +125,13 @@ export const qrCodeGenerator = () => {
   }
 }  
 
-export const checkin = () => {
+
+
+export const checkin = ({ attendantId }) => {
   const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
   
   return (dispatch, getState) => {
-    const attendantId = getState().attendant.attendant.attendantId
+    //const attendantId = getState().attendant.attendant.attendantId
     
     fetch ( `${CHECKIN_URL}/${attendantId}`, {
       method: 'POST',

@@ -59,7 +59,8 @@ export const attendant = createSlice({
 // }
 
 export const registration = (attendantName, department, attendantEmail) => {
-  const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
+  // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
+  const REGISTER_URL = 'http://localhost:8080/api/users'
   return (dispatch, getState) => {
     const accessToken = getState().user.login.accessToken
     const userId = getState().user.login.userId
@@ -96,7 +97,8 @@ export const registration = (attendantName, department, attendantEmail) => {
 
 export const qrCodeGenerator = () => {
   console.log('qrCodeGenerator start')
-  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
+  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
+  const CHECKIN_URL = 'http://localhost:8080/api'
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId
     // const accessToken = getState().user.login.accessToken
@@ -126,8 +128,9 @@ export const qrCodeGenerator = () => {
 }  
 
 export const checkin = ({ attendantId }) => {
-  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
-  
+  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
+  const CHECKIN_URL = 'http://localhost:8080/api/checkin'
+  console.log (attendantId, "CheckinattendantId")
   return (dispatch, getState) => {
     //const attendantId = getState().attendant.attendant.attendantId
     
@@ -139,6 +142,7 @@ export const checkin = ({ attendantId }) => {
       if (!res.ok) {
         throw new Error ('Could not find the attendant')
       }
+      res.json()
     })
   }
 }

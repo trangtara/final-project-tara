@@ -1,18 +1,22 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { attendant } from '../../../check-in-app/frontend/src/reducers/attendant'
 
 import { checkin } from '../reducers/attendant'
 
 const Checkin = () => {
   const { attendantId } = useParams()
 
+  console.log("Params AttendantId", attendantId)
   const [ attendantName, setAttendantName ] = useState('')
   const [ department, setDepartment ] = useState('')
+
   const dispatch = useDispatch()
 
-  fetch(`https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`)
+  const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
+// const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
+
+  fetch(ATTENDANTDATA)
   .then((res) => {
     console.log('res', res);
     if (res.ok) {
@@ -29,7 +33,7 @@ const Checkin = () => {
     console.log('ERROR', err)
   })
   
-  const handleCheckin = () => {
+  const handleCheckin = (attendantId) => {
     dispatch(checkin(attendantId))
   }
 

@@ -44,9 +44,9 @@ userSchema.pre('save', async function (next) {
     return next();
   }
   const salt = bcrypt.genSaltSync();
-  console.log(`PRE- password before hash: ${user.password}`);
+  // console.log(`PRE- password before hash: ${user.password}`);
   user.password = bcrypt.hashSync(user.password, salt);
-  console.log(`PRE- password after  hash: ${user.password}`);
+  // console.log(`PRE- password after  hash: ${user.password}`);
   next();
 })
 
@@ -68,15 +68,15 @@ const authenticateUser = async (req, res, next) => {
 
 const User = mongoose.model('User', userSchema );
 
-const CheckinSchema = mongoose.Schema ({
-  checkin: {
-    type: Boolean,
-  },
-  checkinTime: {
-    type: Date,
-    default: Date.now
-  }
-})
+// const CheckinSchema = mongoose.Schema ({
+//   checkin: {
+//     type: Boolean,
+//   },
+//   checkinTime: {
+//     type: Date,
+//     default: Date.now
+//   }
+// })
 const Attendant = mongoose.model('Attendant', {
   attendantName: {
     type: String,
@@ -97,11 +97,23 @@ const Attendant = mongoose.model('Attendant', {
   qrCode: {
     type: String
   },
-  checkin: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'CheckinSchema'
-  }
+  checkin: [
+    { 
+    checkinStatus: {
+      type: Boolean,
+      default: false
+    },
+    checkinTime: {
+      type: Date,
+      default: 0
+    }
+  }]
+  // checkin: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'CheckinSchema'
+  // }
 })
+// console.log(mongoose.Schema.Types.ObjectId, "mongoose.Schema.Types.ObjectId")
 
 //   PORT=9000 npm start
 const port = process.env.PORT || 8080;
@@ -201,7 +213,8 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
     if (attendant.errors) {
       res.status(404).json({message: 'Could not find any attendant that matches the information', error: error.message})
     }
-    const url = `https://checkinapp.netlify.app/checkin/${attendantId}`;
+    // const url = `https://checkinapp.netlify.app/checkin/${attendantId}`
+    const url = `http://localhost://3000/checkin/${attendantId}`
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
     })
@@ -241,20 +254,23 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 
 app.post('/api/checkin/:attendantId', async (req, res) => {
   const { attendantId } = req.params
+  console.log(attendantId, "attendantId")
   try {
-    const checkin = await Attendant.findByIdAndUpdate({ _id: attendantId }, {
-      checkin: true,
+    const checkin = await Attendant.findByIdAndUpdate({_id: attendantId }, 
+      {
+      checkinStatus: true,
       checkinTime: Date.now
-    })
-    if (!checkin) {
-      throw new Error ('Could not checkin')
-    }
-    res.status(201).json(checkin)
-
-  }
-  catch (err) {
-    console.log(err, "ERROR")
-    res.status(404).json({ errorMessage: err.errors})
+      },
+      {upsert: true}, (err, results) => {
+        if(err) {
+          res.json ({ errorMessage: err})
+        } else {
+          res.json(results)
+        }
+      }
+    )
+  } catch (err) {
+    res.json({ errorMessage: err.errors})
   }
 })
 

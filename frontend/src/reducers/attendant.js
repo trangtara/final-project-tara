@@ -31,23 +31,12 @@ export const attendant = createSlice({
       const { qrCode } = action.payload
       state.attendant.qrCode = qrCode
     }
-    // setCheckin: (state, action) => {
-    //   const { checkin } = action.payload
-    //   console.log( "ACTION PAYLOAD", action.payload)
-    //   console.log("CHECKIN", checkin)
-
-    //   state.attendant.checkin = checkin
-    // },
-    // setSuccessfulCheckin: (state, action) => {
-    //   const { checkinData } = action.payload
-    //   state.attendant.successfulCheckin = checkinData
-    // }
   }
 })
 
 export const registration = (attendantName, department, attendantEmail) => {
-  // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
-  const REGISTER_URL = 'http://localhost:8080/api/users'
+  const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
+  // const REGISTER_URL = 'http://localhost:8080/api/users'
   return (dispatch, getState) => {
 
     const accessToken = getState().user.login.accessToken
@@ -86,8 +75,8 @@ export const registration = (attendantName, department, attendantEmail) => {
 
 export const qrCodeGenerator = () => {
   console.log('qrCodeGenerator start')
-  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
-  const CHECKIN_URL = 'http://localhost:8080/api'
+  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
+  // const CHECKIN_URL = 'http://localhost:8080/api'
 
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId

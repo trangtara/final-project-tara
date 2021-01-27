@@ -27,9 +27,9 @@ export const checkin = createSlice({
 
 export const checkinUpdate = (attendantId) => {
 
-  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
+  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
 
-  const CHECKIN_URL = 'http://localhost:8080/api/checkin'
+  // const CHECKIN_URL = 'http://localhost:8080/api/checkin'
 
   return (dispatch, getState) => {
 

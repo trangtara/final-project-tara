@@ -211,8 +211,8 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
     if (attendant.errors) {
       res.status(404).json({message: 'Could not find any attendant that matches the information', error: error.message})
     }
-    // const url = `https://checkinapp.netlify.app/checkin/${attendantId}`
-    const url = `http://localhost://3000/checkin/${attendantId}`
+    const url = `https://checkinapp.netlify.app/checkin/${attendantId}`
+    // const url = `http://localhost://3000/checkin/${attendantId}`
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
     })

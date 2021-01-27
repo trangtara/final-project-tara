@@ -6,7 +6,8 @@ const initialState = {
     successfulRegistration: null,
     errorMessage: null,
     qrCode: null,
-    checkin: false
+    // checkin: false,
+    // successfulCheckin: null
   }
 }
 
@@ -29,41 +30,29 @@ export const attendant = createSlice({
     setQrCode: (state, action) => {
       const { qrCode } = action.payload
       state.attendant.qrCode = qrCode
-    },
-    setCheckin: (state, action) => {
-      const { checkin } = action.payload
-      console.log( "ACTION PAYLOAD", action.payload)
-      console.log("CHECKIN", checkin)
-
-      state.attendant.checkin = checkin
     }
-  
+    // setCheckin: (state, action) => {
+    //   const { checkin } = action.payload
+    //   console.log( "ACTION PAYLOAD", action.payload)
+    //   console.log("CHECKIN", checkin)
+
+    //   state.attendant.checkin = checkin
+    // },
+    // setSuccessfulCheckin: (state, action) => {
+    //   const { checkinData } = action.payload
+    //   state.attendant.successfulCheckin = checkinData
+    // }
   }
 })
-
-// export const getAttendant = ({ attendantId }) => {
-//   return fetch(`api/attendant/${attendantId}`)
-//     .then((res) => {
-//       if (res.ok) {
-//         return res.json()
-//       }
-//       throw new Error('Could not find attendant')
-//     })
-//     .then((json) => {
-//       console.log('JSON', json);
-//       return json;
-//     })
-//     .catch((err) => {
-//       console.log('ERROR', err)
-//     })
-// }
 
 export const registration = (attendantName, department, attendantEmail) => {
   // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
   const REGISTER_URL = 'http://localhost:8080/api/users'
   return (dispatch, getState) => {
+
     const accessToken = getState().user.login.accessToken
     const userId = getState().user.login.userId
+
     const params = {
       method: 'POST',
       headers: {
@@ -72,6 +61,7 @@ export const registration = (attendantName, department, attendantEmail) => {
       },
       body: JSON.stringify({ attendantName, department, attendantEmail})
     }
+
     fetch(`${REGISTER_URL}/${userId}/registration`, params)
     .then((res) => {
       if (res.ok) {
@@ -84,7 +74,6 @@ export const registration = (attendantName, department, attendantEmail) => {
       dispatch (attendant.actions.setSuccessfulRegistration({ data: json }))
 
       dispatch(attendant.actions.setAttendantId({attendantId: json._id}))
-      console.log(json._id, "json_id")
 
       dispatch (attendant.actions.setErrorMessage({ errorMessage: null }))
     })
@@ -99,18 +88,16 @@ export const qrCodeGenerator = () => {
   console.log('qrCodeGenerator start')
   // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
   const CHECKIN_URL = 'http://localhost:8080/api'
+
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId
     // const accessToken = getState().user.login.accessToken
-    console.log(getState(), "getState")
-    console.log("ID GET FROM THE STATE", attendantId)
     
     fetch(`${CHECKIN_URL}/${attendantId}/qrcode`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     })
     .then((res) => {
-      console.log('qrCodeGenerator res', res)
       if (!res.ok) {
         throw new Error ('Could not get the qrcode')
       }
@@ -125,27 +112,4 @@ export const qrCodeGenerator = () => {
       dispatch(attendant.actions.setErrorMessage({ errorMessage: err}))
     })
   }
-}  
-
-export const checkin = ({ attendantId }) => {
-  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api/checkin'
-  const CHECKIN_URL = 'http://localhost:8080/api/checkin'
-  console.log (attendantId, "CheckinattendantId")
-  return (dispatch, getState) => {
-    //const attendantId = getState().attendant.attendant.attendantId
-    
-    fetch ( `${CHECKIN_URL}/${attendantId}`, {
-      method: 'POST',
-      headers: { 'Content-Type' : 'application/json'}
-    })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error ('Could not find the attendant')
-      }
-      res.json()
-    })
-  }
 }
-
-
-

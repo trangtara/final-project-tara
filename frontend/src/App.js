@@ -10,11 +10,14 @@ import SignUp from './pages/SignUp'
 import Registration from './pages/Registration'
 import { attendant } from './reducers/attendant'
 import Checkin from './pages/Checkin'
+import { checkin } from './reducers/checkin'
 
 const reducer = combineReducers({ 
   user: user.reducer, 
-  attendant: attendant.reducer 
+  attendant: attendant.reducer,
+  checkin: checkin.reducer
 })
+
 
 const store = configureStore({ reducer })
 

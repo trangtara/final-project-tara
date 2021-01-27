@@ -10,7 +10,9 @@ const RegistrationForm = () => {
   const [attendantName, setAttendantName] = useState('')
   const [department, setDepartment] = useState('')
   const [attendantEmail, setAttendantEmail] = useState('')
+
   const dispatch = useDispatch()
+  
   const errorMessage = useSelector((store) => store.attendant.attendant.errorMessage)
   const successfulRegistration = useSelector((store) => store.attendant.attendant.successfulRegistration)
   const qrCode = useSelector((store) => store.attendant.attendant.qrCode)

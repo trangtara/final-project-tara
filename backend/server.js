@@ -97,17 +97,15 @@ const Attendant = mongoose.model('Attendant', {
   qrCode: {
     type: String
   },
-  checkin: [
-    { 
-    checkinStatus: {
-      type: Boolean,
-      default: false
-    },
-    checkinTime: {
-      type: Date,
-      default: 0
-    }
-  }]
+  checkinStatus:{
+    type: Boolean,
+    default: false
+  },
+  checkinTime: {
+    type: Date,
+    default: 0
+  }
+  
   // checkin: {
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: 'CheckinSchema'
@@ -259,7 +257,7 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
     const checkin = await Attendant.findByIdAndUpdate({_id: attendantId }, 
       {
       checkinStatus: true,
-      checkinTime: Date.now
+      checkinTime: Date.now()
       },
       {upsert: true}, (err, results) => {
         if(err) {

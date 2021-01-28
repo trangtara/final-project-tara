@@ -35,12 +35,11 @@ export const attendant = createSlice({
 })
 
 export const registration = (attendantName, department, attendantEmail) => {
-  const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api/users'
-  // const REGISTER_URL = 'http://localhost:8080/api/users'
+  // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api'
+  const REGISTER_URL = 'http://localhost:8080/api'
   return (dispatch, getState) => {
 
     const accessToken = getState().user.login.accessToken
-    const userId = getState().user.login.userId
 
     const params = {
       method: 'POST',
@@ -51,7 +50,7 @@ export const registration = (attendantName, department, attendantEmail) => {
       body: JSON.stringify({ attendantName, department, attendantEmail})
     }
 
-    fetch(`${REGISTER_URL}/${userId}/registration`, params)
+    fetch(`${REGISTER_URL}/registration`, params)
     .then((res) => {
       if (res.ok) {
         return res.json()
@@ -75,16 +74,19 @@ export const registration = (attendantName, department, attendantEmail) => {
 
 export const qrCodeGenerator = () => {
   console.log('qrCodeGenerator start')
-  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
-  // const CHECKIN_URL = 'http://localhost:8080/api'
+  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
+  const CHECKIN_URL = 'http://localhost:8080/api'
 
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId
-    // const accessToken = getState().user.login.accessToken
+    const accessToken = getState().user.login.accessToken
     
     fetch(`${CHECKIN_URL}/${attendantId}/qrcode`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': accessToken
+      }
     })
     .then((res) => {
       if (!res.ok) {

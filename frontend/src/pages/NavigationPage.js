@@ -2,18 +2,17 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 
-import LoginForm from '../components/LoginForm'
+import Navigation from '../components/Navigation'
 
-
-const Login = () => {
+const NavigationPage = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
+  
   return (
     <div>
-      <h1>Login</h1>
-      <LoginForm />
-      {accessToken && <Redirect to="/navigation" />}
+      <Navigation />
+      {!accessToken && <Redirect to="/login"/>}
     </div>
-  )
+  );
 }
  
-export default Login
+export default NavigationPage;

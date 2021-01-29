@@ -8,8 +8,7 @@ import LoginForm from '../components/LoginForm'
 const Login = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="main-container">
       <LoginForm />
       {accessToken && <Redirect to="/navigation" />}
     </div>

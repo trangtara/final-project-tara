@@ -8,7 +8,7 @@ const NavigationPage = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   
   return (
-    <div>
+    <div className="main-container">
       <Navigation />
       {!accessToken && <Redirect to="/login"/>}
     </div>

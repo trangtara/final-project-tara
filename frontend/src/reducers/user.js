@@ -43,7 +43,7 @@ export const signup = (name, email, password) => {
     })
     .then((res) => {
       if (!res.ok) {
-        throw new Error('Could not create account. Maybe the email already exist')
+        throw new Error('Could not create new account. Email already exist.')
       }
       return res.json()
     })
@@ -91,6 +91,7 @@ export const login = (email, password) => {
       )
     })
     .catch((err) => {
+      console.log(err, "Error object")
       dispatch (logout())
       dispatch (
         user.actions.setErrorMessage({

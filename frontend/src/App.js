@@ -32,7 +32,7 @@ export const App = () => {
           <Route path="/signup" exact component={SignUp} />
           <Route path="/navigation" exact component={NavigationPage} />
           <Route path="/registration" exact component={Registration} />
-          <Route path="/checkin/:attendantId" exact component={Checkin} />
+          <Route path="/statistic" exact component={Checkin} />
         </Switch>
       </Router>
     </Provider>

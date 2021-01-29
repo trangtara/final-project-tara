@@ -1,23 +1,23 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import NavigationPage from './NavigationPage'
+import Login from './Login'
+
+import '../styling/pageWrapper.css'
 
 const Home = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   return (
-    <div>
+    <div className="main-container">
       {accessToken && 
-      <h1>Welcome to Admin Page and you are logged in</h1>
+      <>
+      <NavigationPage />
+      </>
       }
       {!accessToken && (
         <div>
-          <h1>Welcome to Home Page</h1>
-      <Link to="/login">
-        <button>Do you want to log in?</button>
-      </Link>
-      <Link to="/signup">
-        <button>Wanna sign up</button>
-      </Link>
+          <h1 className="page-title">Welcome to Home Page</h1>
+      <Login />
       </div>
       )}
     </div>

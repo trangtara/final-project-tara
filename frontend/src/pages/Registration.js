@@ -8,10 +8,9 @@ const Registration = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   //const errorMessage = useSelector((store) => store.attendant.attendant.errorMessage)
   return (
-    <div>
+    <div className="main-container">
       {accessToken &&
         <div>
-          <h1>Attendant registration</h1>
           <RegistrationForm/>
         </div>
       }

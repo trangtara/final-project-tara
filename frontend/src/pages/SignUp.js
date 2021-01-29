@@ -8,7 +8,6 @@ const SignUp = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   return (
     <div>
-      <h1>Sign Up</h1>
       <SignupForm/>
       {accessToken && <Redirect to="/login"/>}
     </div>

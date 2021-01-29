@@ -1,9 +1,11 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { signup } from '../reducers/user'
+import '../styling/form.css'
+import '../styling/pageWrapper.css'
 
 const SignupForm = () => {
   const dispatch = useDispatch()
@@ -14,51 +16,127 @@ const SignupForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [nameError, setNameError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [showValidations, setShowValidations] = useState(false);
+  const [formIsValid, setFormIsValid] = useState(false);
+
+  const nameIsValid = () => {
+    if (!name) {
+      setNameError('Name can not be blank');
+      return false;
+    } else if (name.length < 2) {
+      setNameError('Name should be longer than 2 letters');
+      return false;
+    } else if (name.length > 40) {
+      setNameError('Name should be less than 40 letters');
+      return false;
+    }
+    setNameError(null);
+    return true;
+  };
+
+  const passwordIsValid = () => {
+    if (!password) {
+      setPasswordError('Please type in your password');
+      return false;
+    } else if (password.length < 5) {
+      setPasswordError('Password needs to be longer than 5 characters');
+      return false;
+    }
+    setPasswordError(null);
+    return true;
+  };
+
+  const emailIsValid = () => {
+    if (!email) {
+      setEmailError('Email can not be blank');
+      return false;
+    } else if (!email.includes('@')) {
+      setEmailError('Email must follow email format');
+      return false;
+    }
+    setEmailError(null);
+    return true;
+  };
+
+  useEffect(() => {
+    const formIsValid = nameIsValid() && passwordIsValid() && emailIsValid();
+    setFormIsValid(formIsValid);
+  }, [name, password, email]);
+
   const handleSignup = (event) => {
     event.preventDefault()
-    dispatch(signup(name, email, password))
+    if (formIsValid) {
+      dispatch(signup(name, email, password));
+    } else {
+      setShowValidations(true);
+    }
   }
-
+//Decide whether choosing the built-in validation or the customize validation error message
   return (
-    <div>
-      <form>
-        <label>
-          Name
+    <div className="main-container">
+      <h2 className="page-title">Sign up new User</h2>
+      <form 
+      className="form"
+      onSubmit={(event) => handleSignup(event)}>
+        <div className="input-container">
+          <label 
+          className='label'
+          htlmlFor="name">User Name</label>
           <input
-          required
+          className="input"
+          id="name"
+          // required
           type="text"
+          minLength="2"
           value={name}
           onChange={(event) => setName(event.target.value)}
           />
-        </label>
-        <label>
-        Email
+          <div>
+            {showValidations && nameError}
+          </div>
+          <label className="label">Email</label>
           <input
-          required
-          type="email"
+          className="input"
+          // required
+          // type="email"
+          // placeholder="Email address"
+          // pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           />
-        </label>
-        <label>
-        Password
+          <div>
+            {showValidations && emailError}
+          </div>
+          <label className="label">Password</label>
           <input
-          required
+          className="input"
+          // required
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           />
-        </label>
+          <div>
+            {showValidations && passwordError}
+          </div>
+        </div>
         <button
+        className="button"
         type="submit"
-        onClick={handleSignup}
         >
           Sign Up
         </button>
       </form>
-      <Link to="/login">
-        <button>Already has account?</button>
-      </Link>
+      <div className="other-option">
+        <p>Already has an account?</p>
+        <Link 
+          className="nav-link"
+          to="/login">
+            Log in
+        </Link>
+      </div>
       {errorMessage && <p>{`${errorMessage}`}</p>}
     </div>
   )

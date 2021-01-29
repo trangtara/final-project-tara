@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema ({
   password: {
     type: String,
     required: true,
-    // minlength: 5
+    minlength: 5
   },
   accessToken: {
     type: String,
@@ -266,16 +266,17 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
       },
       {upsert: true}, (err) => {
         if(err) {
+          //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
           return res.status(404).json ({ errorMessage: 'Could not checkin. Make sure attendantId is correct'})
         }
       }
     )
     console.log(checkin, "CHECKIN")
     //Can not reach this codes
-    if (!checkin) {
-      throw new Error ('Could not checkin')
-    }
-    res.status(200).json(checkin)
+    // if (!checkin) {
+    //   throw new Error ('Could not checkin')
+    // }
+    // res.status(200).json(checkin)
   } catch (err) {
     console.log(err, "catch error object")
     res.status(404).json({ errorMessage: err.errors})

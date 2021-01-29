@@ -1,23 +1,29 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import '../styling/pageWrapper.css'
+import '../styling/form.css'
+
 const Navigation = () => {
   return (
     <div>
-      <h2>Welcome to Admin home page</h2>
-      <p>Choose what you want to do next</p>
-      <Link to="/registration">
+      <h2 className="page-title">Welcome to Admin home page</h2>
+      <p className="second-title">Choose what you want to do next</p>
+      <Link className="nav-link" to="/registration">
       <button
+      className="button"
       type="button">
         Register new attendant
       </button>
       </Link>
-      <Link to="/checkin/:attendantId">
+      <Link className="nav-link" to="/statistic">
       <button
+      className="button"
       type="button">
-      Activate checkin
+      Manage registration
       </button>
       </Link>
+      <p>* To activate checkin, login with your mobile phone</p>
     </div>
   )
 }

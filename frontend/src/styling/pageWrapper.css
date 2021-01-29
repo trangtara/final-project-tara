@@ -10,6 +10,10 @@
   align-items: center;
 }
 
+.main-content {
+  width: 80%
+}
+
 .page-title {
   color: #511348;
   font-size: 25px;

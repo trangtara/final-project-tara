@@ -55,7 +55,7 @@ export const registration = (attendantName, department, attendantEmail) => {
       if (res.ok) {
         return res.json()
       }
-      throw new Error('Could not register new attendant')
+      throw new Error("Could not register new attendant. Attendant's email already exist")
     })
     .then((json) => {
 

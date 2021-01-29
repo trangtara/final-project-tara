@@ -228,10 +228,21 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
   }
 })
 
+//app.get('api/attendants', authenticateUser)
+app.get('/api/attendants', async (req, res) => {
+  try {
+    const allAttendants = await Attendant.find()
+    res.status(200).json(allAttendants)
+  } catch (err) {
+    //Test again the senario that errors can happen
+    res.status(400).json({ errorMessage: err.errors})
+  }
+  
+})
+
 // app.get('/api/attendant/:attendantId', authenticateUser)
 app.get('/api/attendant/:attendantId', async (req, res) => {
   const { attendantId } = req.params
-  console.log("attendantId", attendantId)
   try {
     const attendant = await Attendant.findById(attendantId, (err) => {
       if (err) {
@@ -247,7 +258,6 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
     res.status(200).json(attendant)
 
   } catch (err) {
-    console.log(err, "CHECKING ERROR OBJECT")
     res.status(404).json({ 
       //What does the err.message come from???
       errorMessage: err.message
@@ -271,14 +281,12 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
         }
       }
     )
-    console.log(checkin, "CHECKIN")
     //Can not reach this codes
     // if (!checkin) {
     //   throw new Error ('Could not checkin')
     // }
-    // res.status(200).json(checkin)
+    res.status(200).json(checkin)
   } catch (err) {
-    console.log(err, "catch error object")
     res.status(404).json({ errorMessage: err.errors})
   }
 })

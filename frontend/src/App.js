@@ -12,6 +12,7 @@ import { attendant } from './reducers/attendant'
 import Checkin from './pages/Checkin'
 import { checkin } from './reducers/checkin'
 import NavigationPage from './pages/NavigationPage'
+import AttendantList from './pages/AttendantList'
 
 const reducer = combineReducers({ 
   user: user.reducer, 
@@ -32,7 +33,8 @@ export const App = () => {
           <Route path="/signup" exact component={SignUp} />
           <Route path="/navigation" exact component={NavigationPage} />
           <Route path="/registration" exact component={Registration} />
-          <Route path="/statistic" exact component={Checkin} />
+          <Route path="/checkin/:attendantId" exact component={Checkin} />
+          <Route pathe="/attendants" exact component={AttendantList} />
         </Switch>
       </Router>
     </Provider>

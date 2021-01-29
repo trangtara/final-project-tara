@@ -19,7 +19,7 @@ const LoginForm = () => {
     dispatch(login(email, password))
   }
   return (
-    <div>
+    <div className="main-content">
       <h2 className="form-title">Login your account</h2>
       <form className="form">
         <div className="input-container">
@@ -58,7 +58,7 @@ const LoginForm = () => {
             Signup
         </Link>
       </div>
-      {errorMessage && <p>{`${errorMessage}`}</p>}
+      {errorMessage && <p className="fail-result-status">{`${errorMessage}`}</p>}
     </div>
     )
 }

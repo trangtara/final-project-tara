@@ -38,12 +38,25 @@
 .button {
   background-color: #511348;
   border-radius: 10px;
+  border: none;
+  outline: none;
   color: #ffffff;
   font-size: 18px;
-  width: 30%;
-  height: 30px;
   margin: 20px 10px 20px 10px;
+  padding: 10px;
+  text-align: center;
+}
 
+.logout-button {
+  background-color: #5e6072;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 18px;
+  margin: 20px 10px 20px 10px;
+  padding: 10px;
+  text-align: center;
 }
 
 .other-option {
@@ -51,6 +64,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+.other-option-line {
+  font-style: italic;
+  color: #5e6072;
 }
 
 .nav-link {

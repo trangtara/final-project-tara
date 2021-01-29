@@ -62,52 +62,58 @@ const RegistrationForm = () => {
           onChange={(event) => setDepartment(event.target.value)}
           />
         </div>
+        <div className="other-option">
+          <button
+              className="button"
+              type="submit"
+            >
+              Register to get Qr code
+          </button>
+          <button
+            className="logout-button"
+            type="button"
+            onClick={() => dispatch(logout())}
+            >
+              Log Out
+          </button>
+        </div>
       </form>
-      <div className="other-option">
-        <button
-            className="button"
-            type="submit"
-          >
-            Register to get Qr code
-        </button>
-        <button
-          className="button"
-          type="button"
-          onClick={() => dispatch(logout())}
-          >
-            Log Out
-        </button>
-      </div>
+        
       {errorMessage &&
-        <p className="result-status">FAIL: {errorMessage}</p>
+        <p className="fail-result-status">FAIL: {errorMessage}</p>
       }
       {successfulRegistration &&
       <div className="result-container">
         <p className="result-status">Attendant's data SUCCESSfully inserted</p>
-        <div className="result-details-container">
-          <p className="result-details">
-            <span className="result-details-title">Attendant's name: </span>
-            {successfulRegistration.attendantName}</p>
+        <div className="result-elements">
+          <div className="result-details-container">
+            <p className="result-details">
+              <span className="result-details-title">Attendant's name: </span>
+              {successfulRegistration.attendantName}</p>
 
-          <p className="result-details">
-            <span className="result-details-title"> Attendant's email: </span>
-            {successfulRegistration.attendantEmail}
-          </p>
+            <p className="result-details">
+              <span className="result-details-title"> Attendant's email: </span>
+              {successfulRegistration.attendantEmail}
+            </p>
 
-          <p className="result-details">
-            <span className="result-details-title">Attendant's department: </span>
-            {successfulRegistration.department}
-          </p>
-
+            <p className="result-details">
+              <span className="result-details-title">Attendant's department: </span>
+              {successfulRegistration.department}
+            </p>
+          </div>
+          {qrCode &&
+            <QrCode 
+            qrcode={qrCode}
+            attendantName={attendantName}
+            />
+          }
         </div>
-        {qrCode &&
-          <QrCode 
-          qrcode={qrCode}
-          attendantName={attendantName}
-           />
-        }
+        <button
+          type="button"
+          className="button">
+            Send QR code to attendant
+          </button>
       </div>
-        
       }
     </div>
     )

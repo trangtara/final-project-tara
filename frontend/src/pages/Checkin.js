@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom'
 
 import { checkinUpdate } from '../reducers/checkin'
 import CheckinUpdate from '../components/CheckinUpdate'
+import '../styling/pageWrapper.css'
+import '../styling/checkin.css'
+import '../styling/form.css'
 
 const Checkin = () => {
   const { attendantId } = useParams()
@@ -39,15 +42,22 @@ const Checkin = () => {
   }
   
   return (
-    <div>
-      <h2>Check-in information</h2>
-      <p>Name: {attendantName}</p>
-      <p>Department: {department}</p>
+    <div className="main-container">
+      <h2 className="page-title">Check-in information</h2>
+      <div className="checkin-details-container">
+        <p className="checkin-details">
+          <span className="checkin-details-title">Name:</span>{attendantName}
+        </p>
+        <p className="checkin-details">
+          <span className="checkin-details-title">Department:</span>{department}
+        </p>
+      </div>
       <button
-      type="submit"
-      onClick={handleCheckin}>
-        CHECK-IN
-      </button>
+        className= "button"
+        type="button"
+        onClick={handleCheckin}>
+          CHECK-IN
+        </button>
       <CheckinUpdate />
     </div>
   )

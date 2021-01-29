@@ -16,14 +16,14 @@ const Navigation = () => {
         Register new attendant
       </button>
       </Link>
-      <Link className="nav-link" to="/statistic">
+      <Link className="nav-link" to="/attendants">
       <button
       className="button"
       type="button">
-      Manage registration
+      Manage attendant list
       </button>
       </Link>
-      <p>* To activate checkin, login with your mobile phone</p>
+      <p className="other-option-line">* To activate checkin, login with your mobile phone</p>
     </div>
   )
 }

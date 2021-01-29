@@ -16,6 +16,10 @@
   color: #511348;
 }
 
+.fail-result-status {
+  color: #FF0000;
+}
+
 .result-details-container {
   display: flex;
   flex-direction: column;
@@ -28,6 +32,19 @@
   color: #b98039;
 }
 
-.result-details-title {
-  font-weight: 500;
+.result-details-title{
+  font-weight: 600;
+}
+
+.qrcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-elements {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  align-items: center;
 }

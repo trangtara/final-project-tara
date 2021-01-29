@@ -76,7 +76,7 @@ const SignupForm = () => {
   }
 //Decide whether choosing the built-in validation or the customize validation error message
   return (
-    <div className="main-container">
+    <div className="main-content">
       <h2 className="page-title">Sign up new User</h2>
       <form 
       className="form"

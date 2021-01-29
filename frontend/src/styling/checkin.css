@@ -1,0 +1,23 @@
+.checkin-details-container {
+  align-items: flex-start;
+  color: #511348;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.checkin-details {
+  font-size: 20px;
+  margin: 0 0 10px 0;
+  padding-top: 5px;
+}
+
+.checkin-details-title {
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.qrcode-image {
+  width: 60px;
+  height: 60px;
+}

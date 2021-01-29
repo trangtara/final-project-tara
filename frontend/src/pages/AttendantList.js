@@ -8,17 +8,10 @@ import '../styling/table.css'
 
 const AttendantList = () => {
   const [allAttendants, setAllAttendants] = useState([])
-  console.log(allAttendants, "allAttendants")
-  // const [ attendantName, setAttendantName ] = useState('')
-  // const [attendantEmail, setAttendantEmail] = useState('')
-  // const [ department, setDepartment ] = useState('')
-  // const [qrcode, setQrcode] = useState('')
-  // const [checkin, setCheckin] = useState('')
 
+  // const allAttendant_URL = 'http://localhost:8080/api/attendants'
 
-  const allAttendant_URL = 'http://localhost:8080/api/attendants'
-
-  // const ALLATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendants`
+  const allAttendant_URL = `https://event-check-in-app.herokuapp.com/api/attendants`
 
   useEffect(() => {
     fetch(allAttendant_URL)

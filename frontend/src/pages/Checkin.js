@@ -16,9 +16,9 @@ const Checkin = () => {
 
   const dispatch = useDispatch()
 
-  const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
+  // const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
 
-  // const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
+  const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
 
   useEffect(() => {
     fetch(ATTENDANTDATA)

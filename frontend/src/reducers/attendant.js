@@ -35,8 +35,8 @@ export const attendant = createSlice({
 })
 
 export const registration = (attendantName, department, attendantEmail) => {
-  // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api'
-  const REGISTER_URL = 'http://localhost:8080/api'
+  const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api'
+  // const REGISTER_URL = 'http://localhost:8080/api'
   return (dispatch, getState) => {
 
     const accessToken = getState().user.login.accessToken
@@ -74,8 +74,8 @@ export const registration = (attendantName, department, attendantEmail) => {
 
 export const qrCodeGenerator = () => {
   console.log('qrCodeGenerator start')
-  // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
-  const CHECKIN_URL = 'http://localhost:8080/api'
+  const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
+  // const CHECKIN_URL = 'http://localhost:8080/api'
 
   return (dispatch, getState) => {
     const attendantId = getState().attendant.attendant.attendantId

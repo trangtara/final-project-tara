@@ -4,6 +4,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt'
+import { qrCodeEmailTemplate } from './emailTemplate'
 
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject'
@@ -85,13 +86,25 @@ const Attendant = mongoose.model('Attendant', {
   qrCode: {
     type: String
   },
-  checkinStatus:{
-    type: Boolean,
-    default: false
+  isEmailSent: {
+    emailSent: {
+      type: Boolean,
+      default: false
+    },
+    sentTime: {
+      type: Date,
+      default: 0
+    }
   },
-  checkinTime: {
-    type: Date,
-    default: 0
+  checkin: {
+    checkinStatus:{
+      type: Boolean,
+      default: false
+    },
+    checkinTime: {
+      type: Date,
+      default: 0
+    }
   }
 })
 
@@ -100,6 +113,9 @@ const port = process.env.PORT || 8080
 const app = express()
 const endPointList = require('express-list-endpoints')
 const QRCode = require('qrcode')
+const nodemailer = require('nodemailer')
+require('dotenv').config()
+
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -201,8 +217,8 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
       throw new Error('Could not find the attendant. Make sure attendantId is correct')
     }
 
-    const url = `https://checkinapp.netlify.app/checkin/${attendant_id}`
-    // const url = `http://localhost://3000/checkin/${attendant._id}`
+    // const url = `https://checkinapp.netlify.app/checkin/${attendant_id}`
+    const url = `http://localhost://3000/checkin/${attendant._id}`
 
     const qrCode = await QRCode.toDataURL(url, {
       errorCorrectionLevel: 'H'
@@ -270,9 +286,10 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
   const { attendantId } = req.params
   try {
     const checkin = await Attendant.findByIdAndUpdate(attendantId, 
-      {
-      checkinStatus: true,
-      checkinTime: Date.now()
+      { checkin: {
+        checkinStatus: true,
+        checkinTime: Date.now()
+      }
       },
       {upsert: true}, (err) => {
         if(err) {
@@ -290,6 +307,83 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
     res.status(404).json({ errorMessage: err.errors})
   }
 })
+
+// app.post('/api/sendqrcode', authenticateUser)
+app.post('/api/sendqrcode', async(req, res) => {
+  const { attendantId } = req.body
+
+  try {
+    const attendant = await Attendant.findById(attendantId);
+    const alreadySentQrcode = attendant.isEmailSent.emailSent;
+
+    if (alreadySentQrcode) {
+      throw new Error('Email already sent to this attendant')
+    }
+
+    const inviteeEmail = attendant.attendantEmail;
+    const inviteeName = attendant.attendantName
+    const inviteeQrcode = attendant.qrCode
+  
+    console.log('I need to check if we are here')
+    
+    const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode });
+
+    console.log(emailResults, "emailResults")
+    if(!emailResults) {
+      throw new Error('Could not send email')
+    }
+
+    const updateSendQrCode = await Attendant.findByIdAndUpdate(attendantId, 
+      { isEmailSent: {
+      emailSent: true,
+      sentTime: Date.now()
+      }
+    },
+      {upsert: true}, (err) => {
+        if(err) {
+          return res.status(404).json({ errorMessage: 'Could not update emailSent status'})
+        }
+      })
+
+    console.log(updateSendQrCode, "updateSendQrCode")
+
+    res.status(200).json(updateSendQrCode)
+
+  } catch (err) {
+    console.log(err, 'POST API send email errors')
+    res.status(400).json({
+      errorMessage: err.message
+    })
+  }
+})
+
+async function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SER,
+      auth: {
+        user: process.env.SENDER_EMAIL,
+        pass: process.env.SENDER_PASS,
+      }
+    })
+  
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: inviteeEmail,
+      subject: 'testing email',
+      text: 'hello developer',
+      html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode })
+    }
+  
+    const emailData = await transporter.sendMail(mailOptions)
+    console.log(emailData, "emailData")
+    return emailData
+  } catch (err) {
+    console.log(err, "EMAIL SENT ERRORS")
+    res.status(400).json({ errorMessage: 'Email can not be sent'})
+  }
+}
+  
 
 // Start the server
 app.listen(port, () => {

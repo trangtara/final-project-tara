@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { loadingStatus } from './loadingStatus'
 
 const initialState = {
   checkin: {
@@ -30,7 +31,7 @@ export const checkinUpdate = (attendantId) => {
   const CHECKIN_URL = `http://localhost:8080/api/checkin/${attendantId}`
   console.log(CHECKIN_URL, "CHECKIN_URL")
   return (dispatch) => {
-    console.log('are we here?');
+    dispatch(loadingStatus.actions.setLoading(true))
     fetch (CHECKIN_URL, {
       method: 'POST',
       headers: { 'Content-Type' : 'application/json'}
@@ -46,6 +47,8 @@ export const checkinUpdate = (attendantId) => {
       console.log(json, "JSON CHECKIN")
       dispatch(checkin.actions.setErrorMessage({ errorMessage: null}))
       dispatch(checkin.actions.setSuccessfulCheckin({checkinData: json}))
+      dispatch(loadingStatus.actions.setLoading(false))
+
     })
     .catch((err) => {
       console.log(err, "CHECKIN ERRORS")

@@ -13,11 +13,13 @@ import Checkin from './pages/Checkin'
 import { checkin } from './reducers/checkin'
 import NavigationPage from './pages/NavigationPage'
 import AttendantList from './pages/AttendantList'
+import { loadingStatus } from './reducers/loadingStatus'
 
 const reducer = combineReducers({ 
   user: user.reducer, 
   attendant: attendant.reducer,
-  checkin: checkin.reducer
+  checkin: checkin.reducer,
+  isLoading: loadingStatus.reducer
 })
 
 

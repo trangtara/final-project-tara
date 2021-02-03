@@ -6,6 +6,7 @@ import { logout } from '../reducers/user'
 import QrCode from '../components/QRcode'
 import '../styling/form.css'
 import '../styling/results.css'
+import EmailQrcode from './EmailQrcode'
 
 const RegistrationForm = () => {
   const [attendantName, setAttendantName] = useState('')
@@ -17,6 +18,7 @@ const RegistrationForm = () => {
   const errorMessage = useSelector((store) => store.attendant.attendant.errorMessage)
   const successfulRegistration = useSelector((store) => store.attendant.attendant.successfulRegistration)
   const qrCode = useSelector((store) => store.attendant.attendant.qrCode)
+  
 
   const handleRegister = (event) => {
     event.preventDefault()
@@ -78,45 +80,41 @@ const RegistrationForm = () => {
           </button>
         </div>
       </form>
-        
       {errorMessage &&
         <p className="fail-result-status">FAIL: {errorMessage}</p>
       }
       {successfulRegistration &&
-      <div className="result-container">
-        <p className="result-status">Attendant's data SUCCESSfully inserted</p>
-        <div className="result-elements">
-          <div className="result-details-container">
-            <p className="result-details">
-              <span className="result-details-title">Attendant's name: </span>
-              {successfulRegistration.attendantName}</p>
+        <div className="result-container">
+          <p className="result-status">Attendant's data SUCCESSfully inserted</p>
+          <div className="result-elements">
+            <div className="result-details-container">
+              <p className="result-details">
+                <span className="result-details-title">Attendant's name: </span>
+                {successfulRegistration.attendantName}</p>
 
-            <p className="result-details">
-              <span className="result-details-title"> Attendant's email: </span>
-              {successfulRegistration.attendantEmail}
-            </p>
+              <p className="result-details">
+                <span className="result-details-title"> Attendant's email: </span>
+                {successfulRegistration.attendantEmail}
+              </p>
 
-            <p className="result-details">
-              <span className="result-details-title">Attendant's department: </span>
-              {successfulRegistration.department}
-            </p>
+              <p className="result-details">
+                <span className="result-details-title">Attendant's department: </span>
+                {successfulRegistration.department}
+              </p>
+            </div>
+              <QrCode 
+                qrcode={qrCode}
+                attendantName={successfulRegistration.attendantName}
+              />
+              <EmailQrcode 
+                attendantId={successfulRegistration._id}
+                attendantName={successfulRegistration.attendantName}
+              />
           </div>
-          {qrCode &&
-            <QrCode 
-            qrcode={qrCode}
-            attendantName={attendantName}
-            />
-          }
         </div>
-        <button
-          type="button"
-          className="button">
-            Send QR code to attendant
-          </button>
-      </div>
       }
     </div>
-    )
+  )
 }
- 
+
 export default RegistrationForm

@@ -2,10 +2,10 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import crypto from 'crypto'
 import bcrypt from 'bcrypt'
 import { qrCodeEmailTemplate } from './emailTemplate'
-
+import { userSchema } from './schema/userSchema'
+import { attendantSchema } from './schema/attendantSchema'
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject'
 mongoose.connect(mongoUrl, {
@@ -15,38 +15,28 @@ mongoose.connect(mongoUrl, {
 })
 mongoose.Promise = Promise
 
-const userSchema = new mongoose.Schema ({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 5
-  },
-  accessToken: {
-    type: String,
-    default: () => crypto.randomBytes(128).toString('hex')
-  }
-})
+//   PORT=9000 npm start
+const port = process.env.PORT || 8080
+const app = express()
 
-userSchema.pre('save', async function (next) {
-  const user = this
-  
-  if (!user.isModified('password')) {
-    return next()
+const endPointList = require('express-list-endpoints')
+const QRCode = require('qrcode')
+const nodemailer = require('nodemailer')
+require('dotenv').config()
+
+
+app.use(cors())
+app.use(bodyParser.json())
+
+const SERVICE_UNAVAILABLE = 'Service unavailable.'
+
+// Error message in case database is down
+app.use((req, res, next) => {
+  if (mongoose.connection.readyState === 1) {
+    next() // To execute next get response
+  } else {
+    res.status(503).send({ error: SERVICE_UNAVAILABLE })
   }
-  const salt = bcrypt.genSaltSync()
-  // console.log(`PRE- password before hash: ${user.password}`)
-  user.password = bcrypt.hashSync(user.password, salt)
-  // console.log(`PRE- password after  hash: ${user.password}`)
-  next()
 })
 
 const authenticateUser = async (req, res, next) => {
@@ -59,66 +49,24 @@ const authenticateUser = async (req, res, next) => {
     req.user = user
     next()
   } catch (err) {
-    const errorMessage = 'Please try logging in again'
-    res.status(401).json({ error: errorMessage })
+    res.status(401).json({ message: 'Please try loggin again', errors: err.errors })
   }
 }
-
-const User = mongoose.model('User', userSchema )
-
-const Attendant = mongoose.model('Attendant', {
-  attendantName: {
-    type: String,
-    required: true
-  },
-  attendantEmail: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  department: {
-    type: String
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  qrCode: {
-    type: String
-  },
-  isEmailSent: {
-    emailSent: {
-      type: Boolean,
-      default: false
-    },
-    sentTime: {
-      type: Date,
-      default: 0
-    }
-  },
-  checkin: {
-    checkinStatus:{
-      type: Boolean,
-      default: false
-    },
-    checkinTime: {
-      type: Date,
-      default: 0
-    }
+console.log("Am I here?")
+userSchema.pre('save', async function (next) {
+  const user = this
+  if (!user.isModified('password')) {
+    return next()
   }
+  const salt = bcrypt.genSaltSync()
+  console.log(`PRE- password before hash: ${user.password}`)
+  user.password = bcrypt.hashSync(user.password, salt)
+  console.log(`PRE- password after  hash: ${user.password}`)
+  next()
 })
 
-//   PORT=9000 npm start
-const port = process.env.PORT || 8080
-const app = express()
-const endPointList = require('express-list-endpoints')
-const QRCode = require('qrcode')
-const nodemailer = require('nodemailer')
-require('dotenv').config()
-
-
-app.use(cors())
-app.use(bodyParser.json())
+const User = mongoose.model('User', userSchema )
+const Attendant = mongoose.model('Attendant', attendantSchema)
 
 app.get('/', (req, res) => {
   if (!res) {
@@ -127,18 +75,6 @@ app.get('/', (req, res) => {
       .send({ error: 'Oops! Something goes wrong. Try again later!' })
   }
   res.send(endPointList(app))
-})
-
-// Const's for error messages instead of text in error handling
-const SERVICE_UNAVAILABLE = 'Service unavailable.'
-
-// Error message in case database is down
-app.use((req, res, next) => {
-  if (mongoose.connection.readyState === 1) {
-    next() // To execute next get response
-  } else {
-    res.status(503).send({ error: SERVICE_UNAVAILABLE })
-  }
 })
 
 // Signup a user
@@ -154,6 +90,7 @@ app.post('/api/signup', async (req, res) => {
     res.status(201)
     .json({ userId: user._id, accessToken: user.accessToken })
   } catch (err) {
+    console.log(err, "What error is this?")
     res
       .status(400)
       .json({ errorMessage: 'Could not create user', errors: err.errors })
@@ -324,11 +261,8 @@ app.post('/api/sendqrcode', async(req, res) => {
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
   
-    console.log('I need to check if we are here')
-    
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode });
 
-    console.log(emailResults, "emailResults")
     if(!emailResults) {
       throw new Error('Could not send email')
     }
@@ -345,12 +279,9 @@ app.post('/api/sendqrcode', async(req, res) => {
         }
       })
 
-    console.log(updateSendQrCode, "updateSendQrCode")
-
     res.status(200).json(updateSendQrCode)
 
   } catch (err) {
-    console.log(err, 'POST API send email errors')
     res.status(400).json({
       errorMessage: err.message
     })
@@ -376,13 +307,26 @@ async function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
     }
   
     const emailData = await transporter.sendMail(mailOptions)
-    console.log(emailData, "emailData")
     return emailData
   } catch (err) {
-    console.log(err, "EMAIL SENT ERRORS")
     res.status(400).json({ errorMessage: 'Email can not be sent'})
   }
 }
+
+app.post('/api/delete', async (req, res) => {
+  const { attendantId } = req.body
+  try {
+    const deletedAttendant = await Attendant.findByIdAndDelete( attendantId)
+    console.log(deletedAttendant, "deletedAttendant")
+    if (!deletedAttendant) {
+      throw new Error("Could not delete attendant")
+    }
+    res.status(200).json(deletedAttendant)
+  } catch (err) {
+    console.log(err, " What error is this?")
+    res.status(404).json({ errorMessage: err.message})
+  }
+})
   
 
 // Start the server

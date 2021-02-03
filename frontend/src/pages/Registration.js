@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import RegistrationForm from '../components/RegistrationForm'
+import LoadingIndicator from '../components/LoadingIndicator'
 
 const Registration = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
@@ -11,6 +12,7 @@ const Registration = () => {
     <div className="main-container">
       {accessToken &&
         <div>
+          <LoadingIndicator />
           <RegistrationForm/>
         </div>
       }

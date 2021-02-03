@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Redirect } from 'react-router-dom'
+import LoadingIndicator from '../components/LoadingIndicator'
 
 import Navigation from '../components/Navigation'
 
@@ -9,6 +10,7 @@ const NavigationPage = () => {
   
   return (
     <div className="main-container">
+      <LoadingIndicator />
       <Navigation />
       {!accessToken && <Redirect to="/login"/>}
     </div>

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { loadingStatus } from './loadingStatus'
 
 const initialState = {
   login: {
@@ -36,6 +37,7 @@ export const signup = (name, email, password) => {
   // const SIGNUP_URL = 'https://event-check-in-app.herokuapp.com/api/signup'
   const SIGNUP_URL = 'http://localhost:8080/api/signup'
   return (dispatch) => {
+    dispatch(loadingStatus.actions.setLoading(true))
     fetch(SIGNUP_URL, {
       method: 'POST',
       body: JSON.stringify({ name, email, password}),
@@ -55,9 +57,11 @@ export const signup = (name, email, password) => {
       )
       dispatch(user.actions.setUserId({ userId: json.userId}))
       dispatch(user.actions.setErrorMessage({ errorMessage: null}))
+      dispatch(loadingStatus.actions.setLoading(false))
+
     })
     .catch((err) => {
-      dispatch(user.actions.setErrorMessage({ errorMessage: err }))
+      dispatch(user.actions.setErrorMessage({ errorMessage: err.message}))
     })
   }
 }
@@ -66,6 +70,8 @@ export const login = (email, password) => {
   // const LOGIN_URL = 'https://event-check-in-app.herokuapp.com/api/login'
   const LOGIN_URL = 'http://localhost:8080/api/login'
   return (dispatch) => {
+    dispatch(loadingStatus.actions.setLoading(true))
+
     fetch (LOGIN_URL, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -89,6 +95,8 @@ export const login = (email, password) => {
       dispatch (
         user.actions.setErrorMessage({ errorMessage: null })
       )
+      dispatch(loadingStatus.actions.setLoading(false))
+
     })
     .catch((err) => {
       console.log(err, "Error object")

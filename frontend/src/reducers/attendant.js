@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { loadingStatus } from './loadingStatus'
 
 const initialState = {
   attendant: {
@@ -6,8 +7,8 @@ const initialState = {
     successfulRegistration: null,
     errorMessage: null,
     qrCode: null,
-    // checkin: false,
-    // successfulCheckin: null
+    successfulSendQrCode: null,
+    successfulDeleteAttendant: null
   }
 }
 
@@ -30,7 +31,18 @@ export const attendant = createSlice({
     setQrCode: (state, action) => {
       const { qrCode } = action.payload
       state.attendant.qrCode = qrCode
+    },
+    setSuccessfulSendQrcode: (state, action) => {
+      const { data } = action.payload
+      console.log(action.payload, "action payload of SendQrcode")
+      state.attendant.successfulSendQrCode = data
+    },
+    setSuccessfulDeleteAttendant: (state, action) => {
+      const { data } = action.payload
+      console.log(action.payload, "payload of deleted attendant")
+      state.attendant.successfulDeleteAttendant = data
     }
+  
   }
 })
 
@@ -38,6 +50,7 @@ export const registration = (attendantName, department, attendantEmail) => {
   // const REGISTER_URL = 'https://event-check-in-app.herokuapp.com/api'
   const REGISTER_URL = 'http://localhost:8080/api'
   return (dispatch, getState) => {
+    dispatch(loadingStatus.actions.setLoading(true))
 
     const accessToken = getState().user.login.accessToken
 
@@ -64,6 +77,8 @@ export const registration = (attendantName, department, attendantEmail) => {
       dispatch(attendant.actions.setAttendantId({attendantId: json._id}))
 
       dispatch (attendant.actions.setErrorMessage({ errorMessage: null }))
+      dispatch(loadingStatus.actions.setLoading(false))
+
     })
     .catch((err) => {
       dispatch(attendant.actions.setSuccessfulRegistration({ data: null }))
@@ -78,6 +93,8 @@ export const qrCodeGenerator = () => {
   const CHECKIN_URL = 'http://localhost:8080/api'
 
   return (dispatch, getState) => {
+    dispatch(loadingStatus.actions.setLoading(true))
+
     const attendantId = getState().attendant.attendant.attendantId
     const accessToken = getState().user.login.accessToken
     
@@ -98,9 +115,89 @@ export const qrCodeGenerator = () => {
       dispatch(attendant.actions.setQrCode({
         qrCode: json
       }))
+      dispatch(loadingStatus.actions.setLoading(false))
     })
     .catch((err) => {
       dispatch(attendant.actions.setErrorMessage({ errorMessage: err}))
     })
   }
 }
+
+export const sendQrcode = (attendantId) => {
+
+  console.log(attendantId, "attendantId")
+  // const SENDQRCODE_URL = 'https://event-check-in-app.herokuapp.com/api/sendqrcode'
+  const SENDQRCODE_URL = 'http://localhost:8080/api/sendqrcode'
+  return(dispatch, getState) => {
+    dispatch(loadingStatus.actions.setLoading(true))
+    const accessToken = getState().user.login.accessToken
+    fetch(SENDQRCODE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accessToken
+      },
+      body: JSON.stringify({ attendantId })
+    })
+    .then((res) => {
+      if(res.ok) {
+        return res.json()
+      }
+      throw new Error (`Email already sent to ${attendantId}`)
+    })
+    .then((json) => {
+      dispatch(attendant.actions.setSuccessfulSendQrcode({ data: json}))
+      dispatch(attendant.actions.setErrorMessage({ errorMessage: null}))
+      dispatch(loadingStatus.actions.setLoading(false))
+
+    })
+    .catch((err) => {
+      console.log(err, "sendQRcode-Errors??? What is it??")
+      dispatch(attendant.actions.setSuccessfulSendQrcode({ data: null}))
+      dispatch(attendant.actions.setErrorMessage({ errorMessage: err.message}))
+    })
+  }
+}
+
+export const deleteAttendant = (attendantId) => {
+  console.log(attendantId, "attendantId")
+  
+  // const DELETEATTENDANT_URL = 'https://event-check-in-app.herokuapp.com/api/delete'
+
+  const DELETEATTENDANT_URL = 'http://localhost:8080/api/delete'
+
+  return(dispatch, getState) => {
+    dispatch(loadingStatus.actions.setLoading(true))
+    const accessToken = getState().user.login.accessToken
+    
+    fetch(DELETEATTENDANT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accessToken
+      },
+      body: JSON.stringify({ attendantId })
+    })
+    .then((res) => {
+      if (res.ok) {
+        return res.json()
+      }
+      throw new Error('Could not find the attendant')
+    })
+    .then((json) => {
+      dispatch(attendant.actions.setSuccessfulDeleteAttendant({ data: json}))
+      dispatch(attendant.actions.setErrorMessage({ errorMessage: null}))
+      dispatch(loadingStatus.actions.setLoading(false))
+    })
+    .catch((err) => {
+      console.log(err, "ERRORs")
+      dispatch(attendant.actions.setSuccessfulDeleteAttendant({ data: null}))
+      dispatch(attendant.actions.setErrorMessage({ errorMessage: err.message}))
+    })
+  }
+}
+
+
+
+
+

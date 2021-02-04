@@ -9,10 +9,10 @@ import LogIn from './pages/Login'
 import SignUp from './pages/SignUp'
 import Registration from './pages/Registration'
 import { attendant } from './reducers/attendant'
-import Checkin from './pages/Checkin'
+import CheckinPage from './pages/CheckinPage'
 import { checkin } from './reducers/checkin'
 import NavigationPage from './pages/NavigationPage'
-import AttendantList from './pages/AttendantList'
+import Attendants from './pages/Attendants'
 import { loadingStatus } from './reducers/loadingStatus'
 
 const reducer = combineReducers({ 
@@ -35,8 +35,8 @@ export const App = () => {
           <Route path="/signup" exact component={SignUp} />
           <Route path="/navigation" exact component={NavigationPage} />
           <Route path="/registration" exact component={Registration} />
-          <Route path="/checkin/:attendantId" exact component={Checkin} />
-          <Route pathe="/attendants" exact component={AttendantList} />
+          <Route path="/checkin/:attendantId" exact component={CheckinPage} />
+          <Route pathe="/attendants" exact component={Attendants} />
         </Switch>
       </Router>
     </Provider>

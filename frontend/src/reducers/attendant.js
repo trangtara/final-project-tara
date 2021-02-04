@@ -87,15 +87,15 @@ export const registration = (attendantName, department, attendantEmail) => {
   }
 }
 
-export const qrCodeGenerator = () => {
-  console.log('qrCodeGenerator start')
+export const qrCodeGenerator = (attendantId) => {
+  console.log('qrCodeGenerator start', attendantId)
   // const CHECKIN_URL = 'https://event-check-in-app.herokuapp.com/api'
   const CHECKIN_URL = 'http://localhost:8080/api'
 
   return (dispatch, getState) => {
     dispatch(loadingStatus.actions.setLoading(true))
 
-    const attendantId = getState().attendant.attendant.attendantId
+    // const attendantId = getState().attendant.attendant.attendantId
     const accessToken = getState().user.login.accessToken
     
     fetch(`${CHECKIN_URL}/${attendantId}/qrcode`, {

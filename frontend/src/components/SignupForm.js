@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { signup } from '../reducers/user'
+import Button from './common/buttons/Button'
+
 import '../styling/form.css'
 import '../styling/pageWrapper.css'
 
@@ -84,7 +86,7 @@ const SignupForm = () => {
         <div className="input-container">
           <label 
           className='label'
-          htlmlFor="name">User Name</label>
+          >User Name</label>
           <input
           className="input"
           id="name"
@@ -122,12 +124,10 @@ const SignupForm = () => {
             {showValidations && passwordError}
           </div>
         </div>
-        <button
-        className="button"
-        type="submit"
-        >
-          Sign Up
-        </button>
+        <Button
+        type= "submit"
+        text="Sign up"
+        />
       </form>
       <div className="other-option">
         <p>Already has an account?</p>

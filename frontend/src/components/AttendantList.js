@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
+import Button from '../components/common/buttons/Button'
 import { sendQrcode } from '../reducers/attendant'
 import { checkinUpdate } from '../reducers/checkin'
 import { deleteAttendant } from '../reducers/attendant'
+import { qrCodeGenerator } from '../reducers/attendant'
+import { logout } from '../reducers/user'
 
 // import CheckinUpdate from '../components/CheckinUpdate'
 import '../styling/pageWrapper.css'
@@ -36,6 +40,11 @@ const AttendantList = () => {
     })
   }, [])
 
+
+  const handleGenerateQrcode = (attendantId) => {
+    dispatch(qrCodeGenerator(attendantId))
+  }
+
   const handleSendQrcode = (attendantId) => {
     dispatch(sendQrcode(attendantId))
   }
@@ -50,7 +59,13 @@ const AttendantList = () => {
   
   return (
     <div className="main-container">
-      <h2 className="page-title">List of all attendants</h2>
+      <Link className="nav-link" to="/">
+        <Button
+          type="button"
+          onClick={() => dispatch(logout())}
+          text="Logout"
+          />
+      </Link>
       <table className="table">
         <tbody>
           <tr>
@@ -61,6 +76,7 @@ const AttendantList = () => {
             <th className="table-header">QRcode</th>
             <th className="table-header">QRcode sent</th>
             <th className="table-header">Checkin status</th>
+            <th className="table-header">Generate QR code</th>
             <th className="table-header">Sent QR code</th>
             <th className="table-header">Manual checkin</th>
             <th className="table-header">Delete</th>
@@ -90,28 +106,32 @@ const AttendantList = () => {
                 }
               </td>
               <td className="table-cell">
-                <button 
-                  className="action-button"
+                <Button 
                   type="button"
-                  onClick={() => handleSendQrcode(attendant._id)}>
-                    Send QR code
-                </button>
+                  onClick={() => handleGenerateQrcode(attendant._id)}
+                  text="Generate QR code"
+                />
               </td>
               <td className="table-cell">
-                <button 
-                  className="action-button" 
+                <Button 
                   type="button"
-                  onClick={() => handleCheckin(attendant._id)}>
-                    Manual checkin
-                </button>
+                  onClick={() => handleSendQrcode(attendant._id)}
+                  text="Send QR code"
+                />
               </td>
               <td className="table-cell">
-                <button 
-                  className="action-button"
+                <Button 
                   type="button"
-                  onClick={() => handleDelete(attendant._id)}>
-                    🗑
-                </button>
+                  onClick={() => handleCheckin(attendant._id)}
+                  text="Manual checkin"
+                />
+              </td>
+              <td className="table-cell">
+                <Button 
+                  type="button"
+                  onClick={() => handleDelete(attendant._id)}
+                  text="🗑"
+                />
               </td>
             </tr>
           ))}

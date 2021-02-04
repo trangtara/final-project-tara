@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import {  registration, qrCodeGenerator } from '../reducers/attendant'
 import { logout } from '../reducers/user'
 import QrCode from '../components/QRcode'
+import Button from '../components/common/buttons/Button'
+
 import '../styling/form.css'
 import '../styling/results.css'
 import EmailQrcode from './EmailQrcode'
@@ -27,7 +30,9 @@ const RegistrationForm = () => {
   //What to do with the []
   useEffect(() => {
     if (successfulRegistration) {
-      dispatch(qrCodeGenerator())
+      const attendantId = successfulRegistration._id
+      console.log(attendantId, "attendantId frontend")
+      dispatch(qrCodeGenerator(attendantId))
     }
   })
 
@@ -65,19 +70,21 @@ const RegistrationForm = () => {
           />
         </div>
         <div className="other-option">
-          <button
-              className="button"
+          <Button
               type="submit"
-            >
-              Register to get Qr code
-          </button>
-          <button
-            className="logout-button"
+              text="Register to get Qr code"
+          />
+          <Link className="nav-link" to="/attendants">
+            <Button
+            type="button"
+            text="Manage attendant list"
+            />
+          </Link>
+          <Button
             type="button"
             onClick={() => dispatch(logout())}
-            >
-              Log Out
-          </button>
+            text="Log Out"
+          />
         </div>
       </form>
       {errorMessage &&

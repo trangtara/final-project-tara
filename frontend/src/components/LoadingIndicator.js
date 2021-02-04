@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 
 const LoadingIndicator = () => {
   const isLoading = useSelector((store) => store.isLoading.isLoading)
-  console.log(isLoading, "isLoading")
 
   return (
     <div>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { login } from '../reducers/user'
+import Button from '../components/common/buttons/Button'
 import '../styling/form.css'
 import '../styling/pageWrapper.css'
 
@@ -42,13 +43,12 @@ const LoginForm = () => {
             onChange={(event) => setPassword(event.target.value)}
           />
         </div>
-        <button
-        className="button"
-        type="submit"
-        //what is the difference between handleLogin() and handleLogin
-        onClick={handleLogin}>
-          Login
-        </button>
+        <Button
+          type="submit"
+          //what is the difference between handleLogin() and handleLogin
+          onClick={handleLogin}
+          text="Login"
+        />
       </form>
       <div className="other-option">
         <p>Do not have an account yet?</p>

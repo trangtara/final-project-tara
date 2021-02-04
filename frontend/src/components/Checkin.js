@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import { checkinUpdate } from '../reducers/checkin'
-import CheckinUpdate from '../components/CheckinUpdate'
+import CheckinUpdate from './CheckinUpdate'
+import Button from '../components/common/buttons/Button'
 import '../styling/pageWrapper.css'
 import '../styling/checkin.css'
 import '../styling/form.css'
@@ -43,7 +44,7 @@ const Checkin = () => {
   
   return (
     <div className="main-container">
-      <h2 className="page-title">Check-in information</h2>
+      
       <div className="checkin-details-container">
         <p className="checkin-details">
           <span className="checkin-details-title">Name:</span>{attendantName}
@@ -52,12 +53,11 @@ const Checkin = () => {
           <span className="checkin-details-title">Department:</span>{department}
         </p>
       </div>
-      <button
-        className= "button"
+      <Button
         type="button"
-        onClick={handleCheckin}>
-          CHECK-IN
-        </button>
+        onClick={handleCheckin}
+        text="CHECK-IN"
+      />
       <CheckinUpdate />
     </div>
   )

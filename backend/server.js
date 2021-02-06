@@ -52,16 +52,15 @@ const authenticateUser = async (req, res, next) => {
     res.status(401).json({ message: 'Please try loggin again', errors: err.errors })
   }
 }
-console.log("Am I here?")
 userSchema.pre('save', async function (next) {
   const user = this
   if (!user.isModified('password')) {
     return next()
   }
   const salt = bcrypt.genSaltSync()
-  console.log(`PRE- password before hash: ${user.password}`)
+  // console.log(`PRE- password before hash: ${user.password}`)
   user.password = bcrypt.hashSync(user.password, salt)
-  console.log(`PRE- password after  hash: ${user.password}`)
+  // console.log(`PRE- password after  hash: ${user.password}`)
   next()
 })
 
@@ -90,7 +89,6 @@ app.post('/api/signup', async (req, res) => {
     res.status(201)
     .json({ userId: user._id, accessToken: user.accessToken })
   } catch (err) {
-    console.log(err, "What error is this?")
     res
       .status(400)
       .json({ errorMessage: 'Could not create user', errors: err.errors })
@@ -119,7 +117,7 @@ app.post('/api/login', async (req, res) => {
 })
 
 // attendant registration form
-app.post('/api/registration', authenticateUser)
+// app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
 try {
@@ -137,10 +135,17 @@ try {
   }
 })
 
-app.get('/api/:attendantId/qrcode', authenticateUser)
+// app.get('/api/:attendantId/qrcode', authenticateUser)
 app.get('/api/:attendantId/qrcode', async (req, res) => {
   const { attendantId } = req.params
-  
+
+  // console.log(`Authenticated req.user._id: '${req.user._id.$oid}'`);
+  // console.log(`Requested     user._id    : '${user._id}'`);
+  // console.log(`Equal   : ${req.user_id == user._id}`);
+
+  // if (req.user._id.$oid !== user._id.$oid) {
+  //   res.status(403).json({ errorMessage: 'You are not authorized to see this content'})
+  // }
   try {
     const attendant = await Attendant.findById(attendantId, (err) => {
       if (err) {
@@ -181,7 +186,7 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
   }
 })
 
-//app.get('api/attendants', authenticateUser)
+// app.get('api/attendants', authenticateUser)
 app.get('/api/attendants', async (req, res) => {
   try {
     const allAttendants = await Attendant.find()
@@ -313,17 +318,16 @@ async function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   }
 }
 
+app.post('/api/delete', authenticateUser)
 app.post('/api/delete', async (req, res) => {
   const { attendantId } = req.body
   try {
     const deletedAttendant = await Attendant.findByIdAndDelete( attendantId)
-    console.log(deletedAttendant, "deletedAttendant")
     if (!deletedAttendant) {
       throw new Error("Could not delete attendant")
     }
     res.status(200).json(deletedAttendant)
   } catch (err) {
-    console.log(err, " What error is this?")
     res.status(404).json({ errorMessage: err.message})
   }
 })

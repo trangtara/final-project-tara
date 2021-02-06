@@ -40,21 +40,28 @@ const AttendantList = () => {
     })
   }, [])
 
+  const refreshPage = () => {
+    window.location.reload()
+  }
 
   const handleGenerateQrcode = (attendantId) => {
     dispatch(qrCodeGenerator(attendantId))
+    refreshPage()
   }
 
   const handleSendQrcode = (attendantId) => {
     dispatch(sendQrcode(attendantId))
+    refreshPage()
   }
 
   const handleCheckin = (attendantId) => {
     dispatch(checkinUpdate(attendantId))
+    refreshPage()
   }
 
   const handleDelete = (attendantId) => {
     dispatch(deleteAttendant(attendantId))
+    refreshPage()
   }
   
   return (
@@ -108,28 +115,28 @@ const AttendantList = () => {
               <td className="table-cell">
                 <Button 
                   type="button"
-                  onClick={() => handleGenerateQrcode(attendant._id)}
+                  onClick={() => window.confirm('Are you sure you want to generate the qrCode for this attendant?') &&handleGenerateQrcode(attendant._id)}
                   text="Generate QR code"
                 />
               </td>
               <td className="table-cell">
                 <Button 
                   type="button"
-                  onClick={() => handleSendQrcode(attendant._id)}
+                  onClick={() => window.confirm('Are you sure you want to email the Qr code to this attendant?') &&handleSendQrcode(attendant._id)}
                   text="Send QR code"
                 />
               </td>
               <td className="table-cell">
                 <Button 
                   type="button"
-                  onClick={() => handleCheckin(attendant._id)}
+                  onClick={() => window.confirm('Are you sure you want to check in this attendant?') && handleCheckin(attendant._id)}
                   text="Manual checkin"
                 />
               </td>
               <td className="table-cell">
                 <Button 
                   type="button"
-                  onClick={() => handleDelete(attendant._id)}
+                  onClick={() => window.confirm('Are you sure you want to remove this attendant out of the database') &&handleDelete(attendant._id)}
                   text="🗑"
                 />
               </td>

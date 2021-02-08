@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { deleteAttendant, sendQrcode } from '../reducers/attendants'
+import { deleteAttendant, sendQrcode, fetchAllAttendants } from '../reducers/attendants'
 import { checkinUpdate } from '../reducers/checkin'
 import { logout } from '../reducers/user'
 
@@ -10,6 +10,11 @@ import { logout } from '../reducers/user'
 const AttendantList = () => {
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchAllAttendants())
+  }, [])
+
   const allAttendants = useSelector((store) => store.attendants.all)
   console.log(allAttendants, "allAttendants in components")
 

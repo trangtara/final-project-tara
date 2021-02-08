@@ -6,6 +6,7 @@ const API_URL = 'http://localhost:8080/api'
 const API_REGISTER_URL = `${API_URL}/registration`
 const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
+const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
 
 const initialState = {
   all: [],
@@ -72,7 +73,7 @@ export const attendants = createSlice({
     // Use this when fetching fresh data from backend
     replaceAll: (state, action) => {
       const { attendants } = action.payload
-
+      console.log("replace All action payload", action.payload)
       // Validate payload
       if (!Array.isArray(attendants)) {
         throw new Error('attendants must be of type "array"')
@@ -245,7 +246,40 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  
+  export const fetchAllAttendants = () => {
+    return(dispatch, getState) => {
+      dispatch(loadingStatus.actions.setLoading(true))
+      const accessToken = getState().user.login.accessToken
+      const params = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken
+        }
+      }
+      fetch(API_ALLATTENDANTS_URL, params)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Could not fetch the attendant list')
+        }
+        return res.json()
+      })
+      .then((json) => {
+        dispatch(attendants.actions.replaceAll({  
+          attendants: json
+        }))
+        dispatch(loadingStatus.actions.setLoading(false))
+      })
+      .catch((err) => {
+        console.log(err, "error when fetching all attendants")
+        dispatch(attendants.actions.addNotice({
+          type: 'error',
+          message: err.message,
+          location: 'list'
+        }))
+      })
+    }
+  }
 
   export const closeResultDisplay = () => {
     console.log("what is here")

@@ -8,16 +8,17 @@ import Home from './pages/Home'
 import LogIn from './pages/Login'
 import SignUp from './pages/SignUp'
 import Registration from './pages/Registration'
-import { attendant } from './reducers/attendant'
+import { attendants } from './reducers/attendants'
 import CheckinPage from './pages/CheckinPage'
+import NewEvent from './pages/NewEvent'
 import { checkin } from './reducers/checkin'
-import NavigationPage from './pages/NavigationPage'
 import Attendants from './pages/Attendants'
 import { loadingStatus } from './reducers/loadingStatus'
 
 const reducer = combineReducers({ 
   user: user.reducer, 
-  attendant: attendant.reducer,
+  // attendant: attendant.reducer,
+  attendants: attendants.reducer,
   checkin: checkin.reducer,
   isLoading: loadingStatus.reducer
 })
@@ -33,7 +34,7 @@ export const App = () => {
           <Route path="/" exact component={Home} />
           <Route path="/login" exact component={LogIn} />
           <Route path="/signup" exact component={SignUp} />
-          <Route path="/navigation" exact component={NavigationPage} />
+          <Route path="/newevent" exact component={NewEvent} />
           <Route path="/registration" exact component={Registration} />
           <Route path="/checkin/:attendantId" exact component={CheckinPage} />
           <Route pathe="/attendants" exact component={Attendants} />

@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt'
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
 import { attendantSchema } from './schema/attendantSchema'
+import { eventSchema } from './schema/eventSchema'
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject'
 mongoose.connect(mongoUrl, {
@@ -66,6 +67,7 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema )
 const Attendant = mongoose.model('Attendant', attendantSchema)
+const Event = mongoose.model('Event', eventSchema)
 
 app.get('/', (req, res) => {
   if (!res) {
@@ -117,21 +119,51 @@ app.post('/api/login', async (req, res) => {
 })
 
 // attendant registration form
-// app.post('/api/registration', authenticateUser)
+app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
-try {
-  const newAttendant = await new Attendant({
-    attendantName,
-    attendantEmail,
-    department
-  }).save(newAttendant)
+  
+  try {
+    const newAttendant = await new Attendant({
+      attendantName,
+      attendantEmail,
+      department,
+      created: {createdBy: req.user._id}
+    }).save(newAttendant)
+    console.log(newAttendant, "newAttendant")
 
-  res.status(201).json(newAttendant)
+    if (newAttendant) {
+      const url = `http://localhost://3000/checkin/${newAttendant._id}`
+      console.log('qrcode url', url)
 
+      const qrCode = await QRCode.toDataURL(url, {
+        errorCorrectionLevel: 'H'
+      })
+
+      console.log('qrcode', qrCode)
+    
+      if(!qrCode) {
+        throw new Error('Could not generate qr code')
+      }
+
+      const updatedAttendant = await Attendant.findByIdAndUpdate(
+        newAttendant._id,
+        { qrCode: qrCode },
+        { new: true }
+      )
+
+      console.log('updatedAttendant', updatedAttendant)
+
+      if (!updatedAttendant) {
+        throw new Error ('Could not save qr code to the database')
+      }
+
+      res.status(201).json(updatedAttendant)
+    }
   } catch (err) {
+    console.log('err', err)
     //this catch err is for: missing input, or input does not meet the validation
-    res.status(400).json({errorMessage: 'Could not save new attendant', error: err.errors})
+    res.status(400).json({ errorMessage: err.message })
   }
 })
 
@@ -228,10 +260,11 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
   const { attendantId } = req.params
   try {
     const checkin = await Attendant.findByIdAndUpdate(attendantId, 
-      { checkin: {
-        checkinStatus: true,
-        checkinTime: Date.now()
-      }
+      {
+        checkin: {
+          checkinStatus: true,
+          checkinTime: Date.now()
+        }
       },
       {upsert: true}, (err) => {
         if(err) {

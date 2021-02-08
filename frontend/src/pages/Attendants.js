@@ -1,14 +1,13 @@
 import React from 'react'
-
 import AttendantList from '../components/AttendantList'
+import Layout from '../components/common/Layout'
 
 const Attendants = () => {
   return (
-    <div className="main-container">
-      <h2 className="page-title">List of all attendants</h2>
+    <Layout>
+      <h2>List of all attendants</h2>
       <AttendantList />
-    </div>
-    
+    </Layout>
     )
 }
  

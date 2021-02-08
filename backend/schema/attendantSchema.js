@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 export const attendantSchema = new mongoose.Schema ({
+  event: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Event'
+  },
   attendantName: {
     type: String,
     required: true
@@ -20,7 +24,7 @@ export const attendantSchema = new mongoose.Schema ({
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-		  ref: "User"
+		  ref: 'User'
     }
   },
   qrCode: {

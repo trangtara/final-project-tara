@@ -3,11 +3,8 @@ import { loadingStatus } from './loadingStatus'
 
 const initialState = {
   login: {
-    // accessToken: localStorage.accessToken || null,
-    // userId: localStorage.userId || 0,
-    // errorMessage: null
-    accessToken: null,
-    userId: 0,
+    accessToken: localStorage.accessToken || null,
+    userId: localStorage.userId || 0,
     errorMessage: null
   }
 }
@@ -19,12 +16,12 @@ export const user = createSlice({
     setAccessToken: (state, action) => {
       const { accessToken } = action.payload
       state.login.accessToken = accessToken
-      // localStorage.setItem('accessToken', accessToken)
+      localStorage.setItem('accessToken', accessToken)
     },
     setUserId: (state, action) => {
       const { userId } = action.payload
       state.login.userId = userId
-      // localStorage.setItem('userId', userId)
+      localStorage.setItem('userId', userId)
     },
     setErrorMessage: (state, action) => {
       const { errorMessage } = action.payload
@@ -119,7 +116,7 @@ export const logout = () => {
     dispatch(user.actions.setAccessToken({
       accessToken: null
     }))
-    // localStorage.removeItem('accessToken')
-    // localStorage.removeItem('userId')
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('userId')
   }
 }

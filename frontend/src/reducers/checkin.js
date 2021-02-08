@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { loadingStatus } from './loadingStatus'
+import { attendant } from './attendant'
 
 const initialState = {
   checkin: {
@@ -47,6 +48,7 @@ export const checkinUpdate = (attendantId) => {
       console.log(json, "JSON CHECKIN")
       dispatch(checkin.actions.setErrorMessage({ errorMessage: null}))
       dispatch(checkin.actions.setSuccessfulCheckin({checkinData: json}))
+      dispatch(attendant.actions.setAllAttendants({ data: json }))
       dispatch(loadingStatus.actions.setLoading(false))
 
     })

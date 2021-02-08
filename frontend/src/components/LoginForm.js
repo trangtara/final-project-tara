@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { login } from '../reducers/user'
-import Button from '../components/common/buttons/Button'
 import '../styling/form.css'
 import '../styling/pageWrapper.css'
 
@@ -20,10 +19,32 @@ const LoginForm = () => {
     dispatch(login(email, password))
   }
   return (
-    <div className="main-content">
-      <h2 className="form-title">Login your account</h2>
-      <form className="form">
-        <div className="input-container">
+    <div>
+      <form onSubmit={(event) => handleLogin(event)}>
+        <h3>Login your account</h3>
+        <div className="form-floating mb-3">
+          <input 
+            type="email"
+            className="form-control"
+            id="floatingInput"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+          <label htmlFor="floatingInput">Email address</label>
+        </div>
+        <div className="form-floating">
+          <input 
+            type="password"
+            className="form-control"
+            id="floatingPassword"
+            placeholder="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)} 
+          />
+          <label htmlFor="floatingPassword">Password</label>
+        </div>
+        {/* <div className="input-container">
           <label className="label" htmlFor="email">Email</label>
           <input
             className="input"
@@ -42,13 +63,12 @@ const LoginForm = () => {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-        </div>
-        <Button
+        </div> */}
+        <button
+          className="btn btn-primary btn-sm"
           type="submit"
           //what is the difference between handleLogin() and handleLogin
-          onClick={handleLogin}
-          text="Login"
-        />
+        >Login</button>
       </form>
       <div className="other-option">
         <p>Do not have an account yet?</p>

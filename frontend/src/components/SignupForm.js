@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { signup } from '../reducers/user'
-import Button from './common/buttons/Button'
 
 import '../styling/form.css'
 import '../styling/pageWrapper.css'
@@ -64,9 +63,9 @@ const SignupForm = () => {
   };
 
   useEffect(() => {
-    const formIsValid = nameIsValid() && passwordIsValid() && emailIsValid();
+    const formIsValid = nameIsValid() && passwordIsValid() && emailIsValid()
     setFormIsValid(formIsValid);
-  }, [name, password, email]);
+  })
 
   const handleSignup = (event) => {
     event.preventDefault()
@@ -78,56 +77,64 @@ const SignupForm = () => {
   }
 //Decide whether choosing the built-in validation or the customize validation error message
   return (
-    <div className="main-content">
-      <h2 className="page-title">Sign up new User</h2>
-      <form 
-      className="form"
+    <div>
+      <form
       onSubmit={(event) => handleSignup(event)}>
+      <h3>Sign up new User</h3>
         <div className="input-container">
-          <label 
-          className='label'
-          >User Name</label>
-          <input
-          className="input"
-          id="name"
-          // required
-          type="text"
-          minLength="2"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          />
+          <div class="form-floating mb-3">
+            <input
+            required
+            type="text"
+            class="form-control"
+            id="floatingInput"
+            placeholder="username"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            />
+            <label 
+            for="floatingInput"
+            >User Name</label>
+          </div>
           <div>
             {showValidations && nameError}
           </div>
-          <label className="label">Email</label>
-          <input
-          className="input"
-          // required
-          // type="email"
-          // placeholder="Email address"
-          // pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          />
+          <div class="form-floating mb-3">
+            <input
+              required 
+              type="email"
+              class="form-control"
+              id="floatingInput"
+              placeholder="name@example.com"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            <label for="floatingInput">User Email</label>
+          </div>
           <div>
             {showValidations && emailError}
           </div>
-          <label className="label">Password</label>
-          <input
-          className="input"
-          // required
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          />
+          <div className="form-floating mb-3">
+            <input
+            className="form-control"
+            type="text"
+            id="floatingPassword"
+            placeholder="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            />
+            <label for="floatingPassword">Password</label>
+          </div>
           <div>
             {showValidations && passwordError}
           </div>
         </div>
-        <Button
-        type= "submit"
-        text="Sign up"
-        />
+        <button
+        className="btn btn-primary btn-sm"
+        type= "submit">
+          Sign up
+        </button>
       </form>
       <div className="other-option">
         <p>Already has an account?</p>

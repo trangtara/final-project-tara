@@ -11,7 +11,6 @@ import Registration from './pages/Registration'
 import { attendants } from './reducers/attendants'
 import CheckinPage from './pages/CheckinPage'
 import NewEvent from './pages/NewEvent'
-import { checkin } from './reducers/checkin'
 import Attendants from './pages/Attendants'
 import { loadingStatus } from './reducers/loadingStatus'
 
@@ -19,7 +18,6 @@ const reducer = combineReducers({
   user: user.reducer, 
   // attendant: attendant.reducer,
   attendants: attendants.reducer,
-  checkin: checkin.reducer,
   isLoading: loadingStatus.reducer
 })
 

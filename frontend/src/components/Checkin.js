@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { checkinUpdate } from '../reducers/checkin'
-import CheckinUpdate from './CheckinUpdate'
-import Button from '../components/common/buttons/Button'
+import { checkinAttendant } from '../reducers/attendants'
+// import CheckinUpdate from './CheckinUpdate'
+// import Button from '../components/common/buttons/Button'
 import '../styling/pageWrapper.css'
 import '../styling/checkin.css'
 import '../styling/form.css'
 
 const Checkin = () => {
   const { attendantId } = useParams()
-
   const [ attendantName, setAttendantName ] = useState('')
   const [ department, setDepartment ] = useState('')
 
@@ -39,7 +38,7 @@ const Checkin = () => {
   })
   
   const handleCheckin = () => {
-    dispatch(checkinUpdate(attendantId))
+    dispatch(checkinAttendant(attendantId))
   }
   
   return (
@@ -53,12 +52,13 @@ const Checkin = () => {
           <span className="checkin-details-title">Department:</span>{department}
         </p>
       </div>
-      <Button
+      <button
         type="button"
-        onClick={handleCheckin}
-        text="CHECK-IN"
-      />
-      <CheckinUpdate />
+        className="btn btn-primary mr-3"
+        onClick={handleCheckin}>
+          CHECK-IN
+      </button>
+      {/* <CheckinUpdate /> */}
     </div>
   )
 }

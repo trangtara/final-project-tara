@@ -7,6 +7,7 @@ const API_REGISTER_URL = `${API_URL}/registration`
 const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
 const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
+const API_CHECKIN_URL =`${API_URL}/checkin`
 
 const initialState = {
   all: [],
@@ -276,6 +277,46 @@ export const sendQrcode = (attendantId) => {
           location: 'list'
         }))
       })
+    }
+  }
+
+  export const checkinAttendant = (attendantId) => {
+    console.log(attendantId, "checkin attendantId")
+    return(dispatch, getState) => {
+      dispatch(loadingStatus.actions.setLoading(true))
+      const URL = `${API_CHECKIN_URL}/${attendantId}`
+      console.log(URL, "url of checkin")
+      const params = {
+        method: 'POST',
+        headers: { 'Content-Type' : 'application/json'}
+      }
+      fetch(URL, params)
+      .then((res) => {
+        console.log(res, "response of checkin")
+        if (!res.ok) {
+          throw new Error('Could not find the attendant')
+        }
+        return res.json()
+      })
+      .then((json) => {
+        console.log(json, "JSON CHECKIN")
+        dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
+        dispatch(attendants.actions.addNotice({
+          type: 'success',
+          message: `Successfully check in the attendant with email ${json.attendantEmail}`,
+          location: 'list'
+        }))
+        dispatch(loadingStatus.actions.setLoading(false))
+      })
+      .catch((err) => {
+        console.log(err, "errors at checkin thunk")
+        dispatch(attendants.actions.addNotice({
+          type: 'error',
+          message: err.message,
+          location: 'list'
+        }))
+      })
+
     }
   }
 

@@ -2,8 +2,7 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { deleteAttendant, sendQrcode, fetchAllAttendants } from '../reducers/attendants'
-import { checkinUpdate } from '../reducers/checkin'
+import { deleteAttendant, sendQrcode, fetchAllAttendants, checkinAttendant } from '../reducers/attendants'
 import { logout } from '../reducers/user'
 
 
@@ -22,7 +21,7 @@ const AttendantList = () => {
   }
 
   const handleCheckin = ({ attendantId }) => {
-    dispatch(checkinUpdate(attendantId))
+    dispatch(checkinAttendant(attendantId))
   }
 
   const handleDelete = ({ attendantId }) => {

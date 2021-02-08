@@ -73,7 +73,6 @@ export const attendants = createSlice({
     // Use this when fetching fresh data from backend
     replaceAll: (state, action) => {
       const { attendants } = action.payload
-      console.log("replace All action payload", action.payload)
       // Validate payload
       if (!Array.isArray(attendants)) {
         throw new Error('attendants must be of type "array"')
@@ -211,8 +210,7 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  export const deleteAttendant = ({ attendantId }) => {
-    console.log(attendantId, "attendantId deleteAttendant")
+  export const deleteAttendant = (attendantId) => {
     return(dispatch, getState) => {
       dispatch(loadingStatus.actions.setLoading(true))
       const accessToken = getState().user.login.accessToken
@@ -232,7 +230,7 @@ export const sendQrcode = (attendantId) => {
         throw new Error('Could not find the attendant')
       })
       .then((json) => {
-        dispatch(attendants.actions.removeAttendantById(attendantId))
+        dispatch(attendants.actions.removeAttendantById({attendantId: json._id}))
         dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {

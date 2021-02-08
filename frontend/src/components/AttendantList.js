@@ -16,7 +16,6 @@ const AttendantList = () => {
   }, [])
 
   const allAttendants = useSelector((store) => store.attendants.all)
-  console.log(allAttendants, "allAttendants in components")
 
   const handleSendQrcode = ({ attendantId }) => {
     dispatch(sendQrcode(attendantId))
@@ -27,6 +26,7 @@ const AttendantList = () => {
   }
 
   const handleDelete = ({ attendantId }) => {
+    console.log(attendantId, "attendantId of handle delete")
     dispatch(deleteAttendant(attendantId))
   }
   

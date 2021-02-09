@@ -87,7 +87,7 @@ const AttendantList = () => {
                   type="button"
                   onClick={() => window.confirm('Are you sure you want to email the Qr code to this attendant?') &&handleSendQrcode({ attendantId: attendant._id })}
                   >
-                    Send QR code
+                    Send email
                 </button>
                 <button
                   className="btn btn-primary btn-sm" 

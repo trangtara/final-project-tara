@@ -294,7 +294,7 @@ export const sendQrcode = (attendantId) => {
       .then((res) => {
         console.log(res, "response of checkin")
         if (!res.ok) {
-          throw new Error('Could not find the attendant')
+          throw new Error('Attendant already checkin')
         }
         return res.json()
       })
@@ -321,10 +321,16 @@ export const sendQrcode = (attendantId) => {
   }
 
   export const closeResultDisplay = () => {
-    console.log("what is here")
     return (dispatch) => {
       console.log("resetnew")
       dispatch(attendants.actions.resetNew())
+      dispatch(attendants.actions.resetNotices())
+    }
+  }
+
+  export const closeCheckin = () => {
+    return(dispatch) => {
+      console.log("what is here")
       dispatch(attendants.actions.resetNotices())
     }
   }

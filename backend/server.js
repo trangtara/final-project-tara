@@ -130,18 +130,14 @@ app.post('/api/registration', async (req, res) => {
       department,
       created: {createdBy: req.user._id}
     }).save(newAttendant)
-    console.log(newAttendant, "newAttendant")
 
     if (newAttendant) {
       const url = `http://localhost://3000/checkin/${newAttendant._id}`
-      console.log('qrcode url', url)
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
       })
 
-      console.log('qrcode', qrCode)
-    
       if(!qrCode) {
         throw new Error('Could not generate qr code')
       }
@@ -152,8 +148,6 @@ app.post('/api/registration', async (req, res) => {
         { new: true }
       )
 
-      console.log('updatedAttendant', updatedAttendant)
-
       if (!updatedAttendant) {
         throw new Error ('Could not save qr code to the database')
       }
@@ -161,7 +155,6 @@ app.post('/api/registration', async (req, res) => {
       res.status(201).json(updatedAttendant)
     }
   } catch (err) {
-    console.log('err', err)
     //this catch err is for: missing input, or input does not meet the validation
     res.status(400).json({ errorMessage: err.message })
   }
@@ -256,30 +249,35 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 })
 
 // app.post('api/checkin/:attendantId', authenticateUser)
-app.post('/api/checkin/:attendantId', async (req, res) => {
+app.post('/api/checkin/:attendantId', async (req, res, next) => {
   const { attendantId } = req.params
   try {
-    const checkin = await Attendant.findByIdAndUpdate(attendantId, 
-      {
-        checkin: {
-          checkinStatus: true,
-          checkinTime: Date.now()
-        }
-      },
-      {upsert: true}, (err) => {
+
+    const attendant = await Attendant.findById(attendantId)
+    const checkinStatus = attendant.checkin.checkinStatus
+
+    if(checkinStatus) {
+      throw new Error('Attendant already checkin')
+    } else {
+      const updatedCheckin = await Attendant.findByIdAndUpdate(attendantId, 
+        {
+          checkin: {
+            checkinStatus: true,
+            checkinTime: Date.now()
+          }
+        }, 
+        {upsert: true}, (err) => {
         if(err) {
+          console.log(err, "Waht error is here")
           //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
-          return res.status(404).json ({ errorMessage: 'Could not checkin. Make sure attendantId is correct'})
+          return res.status(404).json ({ errorMessage: 'Could not checkin. Make sure attendantId is correct', errors: err})
         }
-      }
-    )
-    //Can not reach this codes
-    // if (!checkin) {
-    //   throw new Error ('Could not checkin')
-    // }
-    res.status(200).json(checkin)
+        res.status(200).json(updatedCheckin)
+      })
+    }
   } catch (err) {
-    res.status(404).json({ errorMessage: err.errors})
+    console.log(err, "ERROR")
+    res.status(404).json({ errorMessage: err.message})
   }
 })
 

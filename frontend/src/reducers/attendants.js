@@ -97,7 +97,7 @@ export const attendants = createSlice({
     // Update an attendant by passing an id and the props to update 
     updateAttendant: (state, action) => {
       const { updatedAttendant } = action.payload
-      console.log('updateAttendant', updatedAttendant)
+      console.log('updatedAttendant', updatedAttendant)
 
       // Validate payload
       if (!updatedAttendant || !updatedAttendant._id) {
@@ -124,7 +124,7 @@ export const addNewAttendant = ({ name, department, email }) => {
     // Reset state
     dispatch(attendants.actions.resetNotices())
     dispatch(attendants.actions.resetNew())
-
+    dispatch(loadingStatus.actions.setLoading(true))
     // Get accessToken for authorization
     const accessToken = getState().user.login.accessToken
     const params = {
@@ -157,6 +157,7 @@ export const addNewAttendant = ({ name, department, email }) => {
           message: `Successfully inserted attendant with email: ${json.attendantEmail}`,
           location: 'registration'
         }))
+        dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
         dispatch(attendants.actions.addNotice({
@@ -283,6 +284,7 @@ export const sendQrcode = (attendantId) => {
   export const checkinAttendant = (attendantId) => {
     console.log(attendantId, "checkin attendantId")
     return(dispatch, getState) => {
+      dispatch(attendants.actions.resetNotices())
       dispatch(loadingStatus.actions.setLoading(true))
       const URL = `${API_CHECKIN_URL}/${attendantId}`
       console.log(URL, "url of checkin")
@@ -312,7 +314,7 @@ export const sendQrcode = (attendantId) => {
         console.log(err, "errors at checkin thunk")
         dispatch(attendants.actions.addNotice({
           type: 'error',
-          message: err.message,
+          message: `${err.message}`,
           location: 'list'
         }))
       })

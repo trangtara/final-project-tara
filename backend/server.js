@@ -160,56 +160,56 @@ app.post('/api/registration', async (req, res) => {
   }
 })
 
-// app.get('/api/:attendantId/qrcode', authenticateUser)
-app.get('/api/:attendantId/qrcode', async (req, res) => {
-  const { attendantId } = req.params
+// // app.get('/api/:attendantId/qrcode', authenticateUser)
+// app.get('/api/:attendantId/qrcode', async (req, res) => {
+//   const { attendantId } = req.params
 
-  // console.log(`Authenticated req.user._id: '${req.user._id.$oid}'`);
-  // console.log(`Requested     user._id    : '${user._id}'`);
-  // console.log(`Equal   : ${req.user_id == user._id}`);
+//   // console.log(`Authenticated req.user._id: '${req.user._id.$oid}'`)
+//   // console.log(`Requested     user._id    : '${user._id}'`)
+//   // console.log(`Equal   : ${req.user_id == user._id}`)
 
-  // if (req.user._id.$oid !== user._id.$oid) {
-  //   res.status(403).json({ errorMessage: 'You are not authorized to see this content'})
-  // }
-  try {
-    const attendant = await Attendant.findById(attendantId, (err) => {
-      if (err) {
-        return res.status(404).json({
-          errorMessage : 'Please make sure attendantId has 12 bytes following moongoose format'
-        })
-      }
-    })
+//   // if (req.user._id.$oid !== user._id.$oid) {
+//   //   res.status(403).json({ errorMessage: 'You are not authorized to see this content'})
+//   // }
+//   try {
+//     const attendant = await Attendant.findById(attendantId, (err) => {
+//       if (err) {
+//         return res.status(404).json({
+//           errorMessage : 'Please make sure attendantId has 12 bytes following moongoose format'
+//         })
+//       }
+//     })
 
-    if (!attendant) {
-      throw new Error('Could not find the attendant. Make sure attendantId is correct')
-    }
+//     if (!attendant) {
+//       throw new Error('Could not find the attendant. Make sure attendantId is correct')
+//     }
 
-    // const url = `https://checkinapp.netlify.app/checkin/${attendant_id}`
-    const url = `http://localhost://3000/checkin/${attendant._id}`
+//     // const url = `https://checkinapp.netlify.app/checkin/${attendant_id}`
+//     const url = `http://localhost://3000/checkin/${attendant._id}`
 
-    const qrCode = await QRCode.toDataURL(url, {
-      errorCorrectionLevel: 'H'
-    })
+//     const qrCode = await QRCode.toDataURL(url, {
+//       errorCorrectionLevel: 'H'
+//     })
     
-    if(!qrCode) {
-      throw new Error('Could not generate qr code')
-    }
+//     if(!qrCode) {
+//       throw new Error('Could not generate qr code')
+//     }
 
-    const updatedAttendant = await Attendant.findByIdAndUpdate(attendant._id, {qrCode: qrCode})
+//     const updatedAttendant = await Attendant.findByIdAndUpdate(attendant._id, {qrCode: qrCode})
 
-    if (!updatedAttendant) {
-      throw new Error ('Could not save qr code to the database')
-    }
+//     if (!updatedAttendant) {
+//       throw new Error ('Could not save qr code to the database')
+//     }
 
-    res.status(201).json(qrCode)
+//     res.status(201).json(qrCode)
 
-  } catch (err) {
-    //this error is printed out when id does not match, attendant is null
-    res.status(404).json({ 
-      errorMessage: err.message
-    })
-  }
-})
+//   } catch (err) {
+//     //this error is printed out when id does not match, attendant is null
+//     res.status(404).json({ 
+//       errorMessage: err.message
+//     })
+//   }
+// })
 
 // app.get('api/attendants', authenticateUser)
 app.get('/api/attendants', async (req, res) => {
@@ -250,10 +250,9 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 })
 
 // app.post('api/checkin/:attendantId', authenticateUser)
-app.post('/api/checkin/:attendantId', async (req, res, next) => {
+app.post('/api/checkin/:attendantId', async (req, res) => {
   const { attendantId } = req.params
   try {
-
     const attendant = await Attendant.findById(attendantId)
     const checkinStatus = attendant.checkin.checkinStatus
 
@@ -287,27 +286,27 @@ app.post('/api/sendqrcode', async(req, res) => {
   const { attendantId } = req.body
 
   try {
-    const attendant = await Attendant.findById(attendantId);
-    const alreadySentQrcode = attendant.isEmailSent.emailSent;
+    const attendant = await Attendant.findById(attendantId)
+    const alreadySentQrcode = attendant.isEmailSent.emailSent
 
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')
     }
 
-    const inviteeEmail = attendant.attendantEmail;
+    const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
   
-    const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode });
+    const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
 
     if(!emailResults) {
       throw new Error('Could not send email')
     }
 
     const updateSendQrCode = await Attendant.findByIdAndUpdate(attendantId, 
-      { isEmailSent: {
-      emailSent: true,
-      sentTime: Date.now()
+      {isEmailSent: {
+        emailSent: true,
+        sentTime: Date.now()
       }
     },
       {upsert: true}, (err) => {

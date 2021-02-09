@@ -7,7 +7,7 @@ import SignupForm from '../components/SignupForm'
 const SignUp = () => {
   const accessToken = useSelector((store) => store.user.login.accessToken)
   return (
-    <div className="main-container">
+    <div className="container">
       <SignupForm/>
       {accessToken && <Redirect to="/login"/>}
     </div>

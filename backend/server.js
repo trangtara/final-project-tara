@@ -214,8 +214,9 @@ app.get('/api/:attendantId/qrcode', async (req, res) => {
 // app.get('api/attendants', authenticateUser)
 app.get('/api/attendants', async (req, res) => {
   try {
-    const allAttendants = await Attendant.find()
+    const allAttendants = await Attendant.find().sort({'created.createdAt': 'desc'})
     res.status(200).json(allAttendants)
+
   } catch (err) {
     //Test again the senario that errors can happen
     res.status(400).json({ errorMessage: err.errors})

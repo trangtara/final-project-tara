@@ -7,7 +7,7 @@ import NavigationItem from './NavigationItem'
 
 const Navigation = () => {
   const dispatch = useDispatch()
-  const location = useLocation();
+  const location = useLocation()
 
   return (
     <div>

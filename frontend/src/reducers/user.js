@@ -64,7 +64,7 @@ export const signup = (name, email, password) => {
 }
 
 export const login = (email, password) => {
-  // const LOGIN_URL = 'https://event-check-in-app.herokuapp.com/api/login'
+  //const LOGIN_URL = 'https://event-check-in-app.herokuapp.com/api/login'
   const LOGIN_URL = 'http://localhost:8080/api/login'
   return (dispatch) => {
     dispatch(loadingStatus.actions.setLoading(true))

@@ -7,14 +7,15 @@ const API_REGISTER_URL = `${API_URL}/registration`
 const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
 const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
+const API_CHECKIN = `${API_URL}/checkin`
 
 const initialState = {
   all: [],
   currentAttandantId: null,
   notices: [],
-  // isSendingInvitesForIds: [],
-  // isCheckingInIds: [],
-  // isDeletingIds: [],
+  invitesInProgress: [],
+  checkinsInProgress: [],
+  // deletionsInProgress: [],
 }
 
 export const attendants = createSlice({
@@ -70,6 +71,54 @@ export const attendants = createSlice({
 
       // Set notice
       state.notices = [...state.notices, { message, type, location }]
+    },
+
+    isSendingInviteToAttendantId: (state, action) => {
+      const { attendantId } = action.payload
+      console.log('isSendingInviteToAttendantId', attendantId)
+      
+      // Validate payload
+      if (typeof attendantId !== 'string') {
+        throw new Error('attendantId must be of type "string"')
+      }
+
+      state.invitesInProgress = [...state.invitesInProgress, attendantId]
+    },
+
+    doneSendingInviteToAttendantId: (state, action) => {
+      const { attendantId } = action.payload
+      console.log('doneSendingInviteToAttendantId', attendantId)
+      
+      // Validate payload
+      if (typeof attendantId !== 'string') {
+        throw new Error('attendantId must be of type "string"')
+      }
+
+      state.invitesInProgress = state.invitesInProgress.filter((id) => id !== attendantId);
+    },
+
+    isCheckingInAttendantId: (state, action) => {
+      const { attendantId } = action.payload
+      console.log('isCheckingInAttendantId', attendantId)
+      
+      // Validate payload
+      if (typeof attendantId !== 'string') {
+        throw new Error('attendantId must be of type "string"')
+      }
+
+      state.checkinsInProgress = [...state.checkinsInProgress, attendantId]
+    },
+
+    doneCheckingInAttendantId: (state, action) => {
+      const { attendantId } = action.payload
+      console.log('doneCheckingInAttendantId', attendantId)
+      
+      // Validate payload
+      if (typeof attendantId !== 'string') {
+        throw new Error('attendantId must be of type "string"')
+      }
+
+      state.checkinsInProgress = state.checkinsInProgress.filter((id) => id !== attendantId);
     },
 
     // Replace all attendants in state
@@ -176,8 +225,8 @@ export const addNewAttendant = ({ name, department, email }) => {
 export const sendQrcode = (attendantId) => {
   console.log(attendantId, "attendantId in sendqrCode thunk")
     return(dispatch, getState) => {
-      dispatch(loadingStatus.actions.setLoading(true))
-      // dispatch(attendants.actions.addIdToIsSendingInvitesForIds(attendantId))
+      dispatch(attendants.actions.isSendingInviteToAttendantId({ attendantId }))
+
       const accessToken = getState().user.login.accessToken
       const params = {
         method: 'POST',
@@ -202,8 +251,6 @@ export const sendQrcode = (attendantId) => {
           message: `Successfully send qrcode to ${json.attendantEmail}`,
           location: 'qrcode'
         }))
-        dispatch(loadingStatus.actions.setLoading(false))
-  
       })
       .catch((err) => {
         dispatch(attendants.actions.addNotice({
@@ -211,6 +258,8 @@ export const sendQrcode = (attendantId) => {
           message: err.message,
           location: 'qrcode'
         }))
+      }).finally(() => {
+        dispatch(attendants.actions.doneSendingInviteToAttendantId({ attendantId }))
       })
     }
   }
@@ -283,12 +332,9 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  export const checkinAttendant = ({ attendantId }) => {
-    return(dispatch, getState) => {
-
-      //dispatch(loadingStatus.actions.setLoading(true))
-
-      const URL = `http://localhost:8080/api/checkin`
+  export const checkinAttendant = (attendantId) => {
+    return(dispatch) => {
+      dispatch(attendants.actions.isCheckingInAttendantId({ attendantId }))
       const params = {
         method: 'POST',
         headers: {
@@ -296,25 +342,20 @@ export const sendQrcode = (attendantId) => {
         },
         body: JSON.stringify({ attendantId }),
       }
-      fetch(URL, params)
+      fetch(API_CHECKIN, params)
       .then((res) => {
-        console.log('checkinAttendant res', res)
-        if (res.ok) {
-          return res.json()
+        if (!res.ok) {
+          throw new Error('Attendant already checkin')
         }
-        throw new Error('Attendant already checkin')
+        return res.json()
       })
       .then((data) => {
-        console.log('checkinAttendant update')
         dispatch(attendants.actions.updateAttendant({ updatedAttendant: data }))
-        console.log('checkinAttendant add notice')
         dispatch(attendants.actions.addNotice({
           type: 'success',
           message: `Successfully check in the attendant with email ${data.attendantEmail}`,
           location: 'list'
         }))
-        console.log('checkinAttendant stop loading')
-        dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
         console.log('checkinAttendant err', err)
@@ -323,6 +364,8 @@ export const sendQrcode = (attendantId) => {
           message: `${err.message}`,
           location: 'list'
         }))
+      }).finally(() => {
+        dispatch(attendants.actions.doneCheckingInAttendantId({ attendantId }))
       })
 
     }

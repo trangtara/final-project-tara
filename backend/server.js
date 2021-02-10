@@ -132,7 +132,7 @@ app.post('/api/registration', async (req, res) => {
     }).save(newAttendant)
 
     if (newAttendant) {
-      const url = `http://localhost:3000/checkin/${newAttendant._id}`
+      const url = `icheckin.netlify.app/checkin/${newAttendant._id}`
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'

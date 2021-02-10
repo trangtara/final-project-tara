@@ -271,7 +271,6 @@ export const sendQrcode = (attendantId) => {
         dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
-        console.log(err, "error when fetching all attendants")
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: err.message,
@@ -281,37 +280,41 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  export const checkinAttendant = (attendantId) => {
-    console.log(attendantId, "checkin attendantId")
+  export const checkinAttendant = ({ attendantId }) => {
     return(dispatch, getState) => {
-      dispatch(attendants.actions.resetNotices())
-      dispatch(loadingStatus.actions.setLoading(true))
-      const URL = `${API_CHECKIN_URL}/${attendantId}`
-      console.log(URL, "url of checkin")
+
+      //dispatch(loadingStatus.actions.setLoading(true))
+
+      const URL = `http://localhost:8080/api/checkin`
       const params = {
         method: 'POST',
-        headers: { 'Content-Type' : 'application/json'}
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ attendantId }),
       }
       fetch(URL, params)
       .then((res) => {
-        console.log(res, "response of checkin")
-        if (!res.ok) {
-          throw new Error('Attendant already checkin')
+        console.log('checkinAttendant res', res)
+        if (res.ok) {
+          return res.json()
         }
-        return res.json()
+        throw new Error('Attendant already checkin')
       })
-      .then((json) => {
-        console.log(json, "JSON CHECKIN")
-        dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
+      .then((data) => {
+        console.log('checkinAttendant update')
+        dispatch(attendants.actions.updateAttendant({ updatedAttendant: data }))
+        console.log('checkinAttendant add notice')
         dispatch(attendants.actions.addNotice({
           type: 'success',
-          message: `Successfully check in the attendant with email ${json.attendantEmail}`,
+          message: `Successfully check in the attendant with email ${data.attendantEmail}`,
           location: 'list'
         }))
+        console.log('checkinAttendant stop loading')
         dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
-        console.log(err, "errors at checkin thunk")
+        console.log('checkinAttendant err', err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: `${err.message}`,

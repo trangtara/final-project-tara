@@ -11,7 +11,7 @@ const Navigation = () => {
 
   return (
     <div>
-      <Link className="nav-link" to="/">
+      <Link to="/">
         <button
           type="button"
           className="btn btn-secondary"
@@ -28,36 +28,6 @@ const Navigation = () => {
         <NavigationItem path="/registration" currentPath={location.pathname} label="Register new attendants" />
         <NavigationItem path="/attendants" currentPath={location.pathname} label="Manage attendants" />
       </ul>
-      
-
-      {/* <Link className="nav-link" to="/registration">
-        <button
-          type="button"
-        >
-          Create new event
-        </button>
-      </Link>
-      <Link className="nav-link" to="/registration">
-        <button
-          type="button"
-        >
-          Register new attendant
-        </button>
-      </Link>
-      <Link className="nav-link" to="/attendants">
-        <button
-          type="button"
-          >Manage attendant list
-        </button>
-      </Link>
-      <Link className="nav-link" to="/">
-        <button
-          type="button"
-          onClick={() => dispatch(logout())}
-        >
-          Logout
-        </button>
-      </Link> */}
     </div>
   )
 }

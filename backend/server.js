@@ -132,7 +132,7 @@ app.post('/api/registration', async (req, res) => {
     }).save(newAttendant)
 
     if (newAttendant) {
-      const url = `http://localhost://3000/checkin/${newAttendant._id}`
+      const url = `http://localhost:3000/checkin/${newAttendant._id}`
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
@@ -250,8 +250,10 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 })
 
 // app.post('api/checkin/:attendantId', authenticateUser)
-app.post('/api/checkin/:attendantId', async (req, res) => {
-  const { attendantId } = req.params
+app.post('/api/checkin', async (req, res) => {
+  const { attendantId } = req.body
+  console.log(req.body, "req.body")
+
   try {
     const attendant = await Attendant.findById(attendantId)
     const checkinStatus = attendant.checkin.checkinStatus
@@ -266,18 +268,18 @@ app.post('/api/checkin/:attendantId', async (req, res) => {
             checkinTime: Date.now()
           }
         }, 
-        {upsert: true}, (err) => {
+        {new: true}, (err) => {
         if(err) {
-          console.log(err, "Waht error is here")
+          console.log(err, "What error is here")
           //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
-          return res.status(404).json ({ errorMessage: 'Could not checkin. Make sure attendantId is correct', errors: err})
+          return res.status(400).json({ errorMessage: 'Could not checkin. Make sure attendantId is correct', errors: err})
         }
         res.status(200).json(updatedCheckin)
       })
     }
   } catch (err) {
-    console.log(err, "ERROR")
-    res.status(404).json({ errorMessage: err.message})
+    console.log('/api/checkin', err)
+    res.status(400).json({ errorMessage: err.message})
   }
 })
 
@@ -288,6 +290,7 @@ app.post('/api/sendqrcode', async(req, res) => {
   try {
     const attendant = await Attendant.findById(attendantId)
     const alreadySentQrcode = attendant.isEmailSent.emailSent
+    console.log(alreadySentQrcode, "alreadySentQrcode")
 
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')
@@ -296,26 +299,28 @@ app.post('/api/sendqrcode', async(req, res) => {
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
+    console.log(inviteeEmail, "inviteeEmail")
   
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
+    console.log(emailResults, "emailResults")
 
     if(!emailResults) {
       throw new Error('Could not send email')
     }
 
     const updateSendQrCode = await Attendant.findByIdAndUpdate(attendantId, 
-      {isEmailSent: {
+      { isEmailSent: {
         emailSent: true,
         sentTime: Date.now()
       }
     },
-      {upsert: true}, (err) => {
+      {new: true}, (err, results) => {
         if(err) {
           return res.status(404).json({ errorMessage: 'Could not update emailSent status'})
+        } else {
+          res.status(200).json(results)
         }
       })
-
-    res.status(200).json(updateSendQrCode)
 
   } catch (err) {
     res.status(400).json({
@@ -325,28 +330,30 @@ app.post('/api/sendqrcode', async(req, res) => {
 })
 
 async function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: process.env.EMAIL_SER,
-      auth: {
-        user: process.env.SENDER_EMAIL,
-        pass: process.env.SENDER_PASS,
-      }
-    })
-  
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: inviteeEmail,
-      subject: 'testing email',
-      text: 'hello developer',
-      html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode })
+  const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SER,
+    auth: {
+      user: process.env.SENDER_EMAIL,
+      pass: process.env.SENDER_PASS,
     }
-  
-    const emailData = await transporter.sendMail(mailOptions)
-    return emailData
-  } catch (err) {
-    res.status(400).json({ errorMessage: 'Email can not be sent'})
+  })
+
+  const mailOptions = {
+    from: process.env.SENDER_EMAIL,
+    to: inviteeEmail,
+    subject: 'testing email',
+    text: 'hello developer',
+    html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
+    attachments: [{
+      filename: 'image.png',
+      height: '200px',
+      width: '200px',
+      path: inviteeQrcode,
+      cid: inviteeQrcode //same cid value as in the html img src
+  }]
   }
+  const emailData = await transporter.sendMail(mailOptions)
+  return emailData
 }
 
 app.post('/api/delete', authenticateUser)

@@ -29,10 +29,11 @@ require('dotenv').config()
 app.use(cors())
 app.use(bodyParser.json())
 
-const SERVICE_UNAVAILABLE = 'Service unavailable.'
+const SERVICE_UNAVAILABLE = 'Can not connect to database'
 
 // Error message in case database is down
 app.use((req, res, next) => {
+  console.log('mongoose.connection', mongoose.connection);
   if (mongoose.connection.readyState === 1) {
     next() // To execute next get response
   } else {

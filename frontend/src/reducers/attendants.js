@@ -7,12 +7,14 @@ const API_REGISTER_URL = `${API_URL}/registration`
 const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
 const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
-const API_CHECKIN_URL =`${API_URL}/checkin`
 
 const initialState = {
   all: [],
   currentAttandantId: null,
   notices: [],
+  // isSendingInvitesForIds: [],
+  // isCheckingInIds: [],
+  // isDeletingIds: [],
 }
 
 export const attendants = createSlice({
@@ -56,7 +58,7 @@ export const attendants = createSlice({
       console.log("addNotice", message, type, location)
       
       // Validate existance and value of type
-      const allowedTypes = ['success', 'warning', 'error'];
+      const allowedTypes = ['success', 'warning', 'error']
       if (!allowedTypes.includes(type)) {
         throw new Error(`Allowed types for notice: ${allowedTypes.join(', ')}`)
       }
@@ -104,14 +106,14 @@ export const attendants = createSlice({
         throw new Error('updateAttendant requires an object with an _id and properties to update')
       }
 
-      const attendantIndex = state.all.findIndex((item) => item._id === updatedAttendant._id);
+      const attendantIndex = state.all.findIndex((item) => item._id === updatedAttendant._id)
 
       if (typeof attendantIndex !== 'number') {
         throw new Error('attendant could not be found in state')
       }
 
       state.all = state.all.map((item, index) => {
-        return index === attendantIndex ? updatedAttendant : item;
+        return index === attendantIndex ? updatedAttendant : item
       })
     }
   }
@@ -143,7 +145,7 @@ export const addNewAttendant = ({ name, department, email }) => {
     // // Create the new attendant
     fetch(API_REGISTER_URL, params)
       .then((res) => {
-        console.log('res', res);
+        console.log('res', res)
         if (res.ok) {
           return res.json()
         }
@@ -175,6 +177,7 @@ export const sendQrcode = (attendantId) => {
   console.log(attendantId, "attendantId in sendqrCode thunk")
     return(dispatch, getState) => {
       dispatch(loadingStatus.actions.setLoading(true))
+      // dispatch(attendants.actions.addIdToIsSendingInvitesForIds(attendantId))
       const accessToken = getState().user.login.accessToken
       const params = {
         method: 'POST',

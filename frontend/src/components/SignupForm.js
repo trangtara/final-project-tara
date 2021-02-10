@@ -2,17 +2,19 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import Spinner from 'react-bootstrap/Spinner'
+
 
 import { signup } from '../reducers/user'
 
-import '../styling/form.css'
-import '../styling/pageWrapper.css'
 
 const SignupForm = () => {
   const dispatch = useDispatch()
   const errorMessage = useSelector((store) => 
     store.user.login.errorMessage
   )
+  const loadingStatus = useSelector((store) => store.isLoading.isLoading)
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -84,9 +86,8 @@ const SignupForm = () => {
         <div className="input-container">
           <div class="form-floating mb-3">
             <input
-            required
             type="text"
-            class="form-control"
+            className="form-control"
             id="floatingInput"
             placeholder="username"
             value={name}
@@ -99,11 +100,11 @@ const SignupForm = () => {
           <div>
             {showValidations && nameError}
           </div>
-          <div class="form-floating mb-3">
+          <div className="form-floating mb-3">
             <input
               required 
               type="email"
-              class="form-control"
+              className="form-control"
               id="floatingInput"
               placeholder="name@example.com"
               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -134,6 +135,10 @@ const SignupForm = () => {
         className="btn btn-primary btn-sm"
         type= "submit">
           Sign up
+          <span>
+            {loadingStatus &&
+            <Spinner animation="border" size="sm" role="status" />}
+          </span>
         </button>
       </form>
       <div className="other-option">

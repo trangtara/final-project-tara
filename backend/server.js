@@ -255,28 +255,30 @@ app.post('/api/checkin', async (req, res) => {
   console.log(req.body, "req.body")
 
   try {
+    //is there a better way to avoid duplicate the "find" function???
     const attendant = await Attendant.findById(attendantId)
     const checkinStatus = attendant.checkin.checkinStatus
 
     if(checkinStatus) {
       throw new Error('Attendant already checkin')
-    } else {
-      const updatedCheckin = await Attendant.findByIdAndUpdate(attendantId, 
-        {
-          checkin: {
-            checkinStatus: true,
-            checkinTime: Date.now()
-          }
-        }, 
-        {new: true}, (err) => {
-        if(err) {
-          console.log(err, "What error is here")
-          //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
-          return res.status(400).json({ errorMessage: 'Could not checkin. Make sure attendantId is correct', errors: err})
-        }
-        res.status(200).json(updatedCheckin)
-      })
     }
+    const updatedCheckin = await Attendant.findByIdAndUpdate(attendantId, 
+      {
+        checkin: {
+          checkinStatus: true,
+          checkinTime: Date.now()
+        }
+      }, 
+      {new: true}, (err) => {
+      if(err) {
+        console.log(err, "What error is here")
+        //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
+
+        //replace res.status(404).json({errorMessage: err.message}) with "throw" to test stream reading
+        throw new Error('Could not checkin. Make sure attendantId is correct')
+      }
+      res.status(200).json(updatedCheckin)
+    })
   } catch (err) {
     console.log('/api/checkin', err)
     res.status(400).json({ errorMessage: err.message})
@@ -290,7 +292,6 @@ app.post('/api/sendqrcode', async(req, res) => {
   try {
     const attendant = await Attendant.findById(attendantId)
     const alreadySentQrcode = attendant.isEmailSent.emailSent
-    console.log(alreadySentQrcode, "alreadySentQrcode")
 
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')
@@ -299,10 +300,8 @@ app.post('/api/sendqrcode', async(req, res) => {
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
-    console.log(inviteeEmail, "inviteeEmail")
   
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
-    console.log(emailResults, "emailResults")
 
     if(!emailResults) {
       throw new Error('Could not send email')

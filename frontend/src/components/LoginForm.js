@@ -2,6 +2,8 @@ import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import Spinner from 'react-bootstrap/Spinner'
+
 
 import { login } from '../reducers/user'
 import '../styling/form.css'
@@ -11,6 +13,7 @@ import '../styling/pageWrapper.css'
 const LoginForm = () => {
   const dispatch = useDispatch()
   const errorMessage = useSelector((store) => store.user.login.errorMessage)
+
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
 
@@ -44,31 +47,12 @@ const LoginForm = () => {
           />
           <label htmlFor="floatingPassword">Password</label>
         </div>
-        {/* <div className="input-container">
-          <label className="label" htmlFor="email">Email</label>
-          <input
-            className="input"
-            id="email"
-            required
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            className="input"
-            id="password"
-            required
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div> */}
         <button
           className="btn btn-primary btn-sm"
           type="submit"
-          //what is the difference between handleLogin() and handleLogin
-        >Login</button>
+        >
+          Login
+        </button>
       </form>
       <div className="other-option">
         <p>Do not have an account yet?</p>

@@ -1,5 +1,5 @@
 const Alert = ({ message, type }) => {
-  const classNames = ['alert'];
+  const classNames = ['alert']
   
   if (['success', 'danger', 'warning'].includes(type)) {
     classNames.push(`alert-${type}`)
@@ -11,7 +11,7 @@ const Alert = ({ message, type }) => {
     <div className={classNames.join(' ')} role="alert">
       {message}
     </div>
-  );
+  )
 }
  
-export default Alert;
+export default Alert

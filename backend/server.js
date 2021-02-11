@@ -288,6 +288,7 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
     port: 465,
     secure: true,
     auth: {
+      type: "OAuth2",
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASS,
     }

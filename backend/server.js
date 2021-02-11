@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
 import { attendantSchema } from './schema/attendantSchema'
@@ -23,6 +24,7 @@ const app = express()
 const endPointList = require('express-list-endpoints')
 const QRCode = require('qrcode')
 const nodemailer = require('nodemailer')
+const mg = require('nodemailer-mailgun-transport')
 require('dotenv').config()
 
 
@@ -282,8 +284,9 @@ console.log(attendantId, "attendantId")
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SER,
-    port:587,
+    service: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASS,

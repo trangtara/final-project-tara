@@ -22,6 +22,7 @@
     "express-list-endpoints": "^5.0.0",
     "mongoose": "^5.8.10",
     "nodemailer": "^6.4.17",
+    "nodemailer-mailgun-transport": "^2.0.2",
     "nodemon": "^2.0.2",
     "qrcode": "^1.4.4"
   },

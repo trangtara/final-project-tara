@@ -119,9 +119,10 @@ app.post('/api/login', async (req, res) => {
 })
 
 // attendant registration form
-// app.post('/api/registration', authenticateUser)
+app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
+  console.log(req.body, "req body")
   
   try {
     const newAttendant = await new Attendant({
@@ -130,14 +131,15 @@ app.post('/api/registration', async (req, res) => {
       department,
       created: {createdBy: req.user._id}
     }).save(newAttendant)
-
+console.log(newAttendant, "newAttendant")
     if (newAttendant) {
-    const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
-    // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
+      const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
+      // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
       })
+      console.log(qrCode, "qrcode")
 
       if(!qrCode) {
         throw new Error('Could not generate qr code')
@@ -148,6 +150,7 @@ app.post('/api/registration', async (req, res) => {
         { qrCode: qrCode },
         { new: true }
       )
+      console.log(updatedAttendant, "updatedAttendant")
 
       if (!updatedAttendant) {
         throw new Error ('Could not save qr code to the database')
@@ -156,6 +159,7 @@ app.post('/api/registration', async (req, res) => {
       res.status(201).json(updatedAttendant)
     }
   } catch (err) {
+    console.log("ERRORS", err)
     //this catch err is for: missing input, or input does not meet the validation
     res.status(400).json({ errorMessage: err.message })
   }
@@ -227,11 +231,9 @@ app.post('/api/checkin', async (req, res) => {
         throw new Error('Could not checkin. Make sure attendantId is correct')
       }
     })
-    console.log("updatedCheckin", updatedCheckin)
     res.status(200).json(updatedCheckin)
 
   } catch (err) {
-    console.log("ERROR in checkin", err)
     res.status(400).json({ errorMessage: err.message})
   }
 })
@@ -239,25 +241,19 @@ app.post('/api/checkin', async (req, res) => {
 // app.post('/api/sendqrcode', authenticateUser)
 app.post('/api/sendqrcode', async(req, res) => {
   const { attendantId } = req.body
-console.log(attendantId, "attendantId")
   try {
     const attendant = await Attendant.findById(attendantId)
     const alreadySentQrcode = attendant.isEmailSent.emailSent
-    console.log(attendant, "attendant to send email")
 
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')
     }
-    console.log(alreadySentQrcode, "alreadySentQrcode")
 
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
-    console.log(inviteeEmail, "inviteeEmail")
-    console.log(inviteeName, "inviteeName")
   
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
-    console.log(emailResults, "emailResults")
 
     if(!emailResults) {
       throw new Error('Could not send email')
@@ -276,10 +272,8 @@ console.log(attendantId, "attendantId")
           res.status(200).json(results)
         }
       })
-      console.log(updateSendQrCode, "updateSendQrCode")
 
   } catch (err) {
-    console.log(err, "send email errors")
     res.status(400).json({
       errorMessage: err.message
     })

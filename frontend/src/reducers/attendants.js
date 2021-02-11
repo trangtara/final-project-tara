@@ -1,11 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { loadingStatus } from './loadingStatus'
 
-// const API_URL = 'https://event-check-in-app.herokuapp.com/api'
-const API_URL = 'http://localhost:8080/api'
+const API_URL = 'https://event-check-in-app.herokuapp.com/api'
+// const API_URL = 'http://localhost:8080/api'
 const API_REGISTER_URL = `${API_URL}/registration`
 const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
-console.log(API_SENDQRCODE_URL, "API_SENDQRCODE_URL")
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
 const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
 const API_CHECKIN = `${API_URL}/checkin`

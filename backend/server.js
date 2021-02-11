@@ -281,8 +281,13 @@ console.log(attendantId, "attendantId")
 })
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  const transporter = nodemailer.createTransport("SMTP",{
+  const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SER,
+    port:465,
+    secure: true, // true for 465, false for other ports
+    logger: true,
+    debug: true,
+    secureConnection: false,
     auth: {
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASS,

@@ -67,7 +67,7 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema )
 const Attendant = mongoose.model('Attendant', attendantSchema)
-const Event = mongoose.model('Event', eventSchema)
+// const Event = mongoose.model('Event', eventSchema)
 
 app.get('/', (req, res) => {
   if (!res) {
@@ -281,16 +281,13 @@ console.log(attendantId, "attendantId")
 })
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+  const auth = {
     auth: {
-      user: process.env.SENDER_EMAIL,
-      pass: process.env.SENDER_PASS,
+      api_key: process.env.api_key,
+      domain: process.env.domain
     }
-  })
+  }
+  const nodemailerMailgun = nodemailer.createTransport(mg (auth))
 
   const mailOptions = {
     from: process.env.SENDER_EMAIL,
@@ -306,8 +303,8 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
       cid: inviteeQrcode //same cid value as in the html img src
     }]
   }
-  console.log(transporter, "transporter")
-  return transporter.sendMail(mailOptions)
+  console.log(nodemailerMailgun, "transporter")
+  return nodemailerMailgun.sendMail(mailOptions)
 }
 
 app.post('/api/delete', authenticateUser)

@@ -9,8 +9,8 @@ const initialState = {
   }
 }
 
-const API_URL = 'http://localhost:8080/api'
-// const API_URL = 'https://event-check-in-app.herokuapp.com/api'
+// const API_URL = 'http://localhost:8080/api'
+const API_URL = 'https://event-check-in-app.herokuapp.com/api'
 const API_SIGNUP_URL = `${API_URL}/signup`
 const API_LOGIN_URL = `${API_URL}/login`
 

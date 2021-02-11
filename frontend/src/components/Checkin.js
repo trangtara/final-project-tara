@@ -5,9 +5,7 @@ import { useParams } from 'react-router-dom'
 import { checkinAttendant, closeCheckin } from '../reducers/attendants'
 import Alert from '../components/common/Alert'
 
-import '../styling/pageWrapper.css'
 import '../styling/checkin.css'
-import '../styling/form.css'
 
 const Checkin = () => {
   const { attendantId } = useParams()
@@ -38,9 +36,7 @@ const Checkin = () => {
       setDepartment(json.department)
     })
     .catch((err) => {
-      console.log('ERROR', err)
       setErrorMessage(err.message)
-      console.log(errorMessage, "errorMessage")
     })
   }, [ATTENDANTDATA, errorMessage])
   
@@ -56,10 +52,12 @@ const Checkin = () => {
   
   return (
     <div className="container">
-      { notices.length === 0 && !attendantName && !department &&
-      <p>Use your phone camera to scan QRcodes of attendants to checkin</p>}
+      {!attendantName && !department &&
+      <p>Use your phone camera to scan QRcodes of attendants to checkin</p>
+      }
       {errorMessage &&
-      <p>{errorMessage}</p>}
+      <p>{errorMessage}</p>
+      }
       {!errorMessage &&
         <div className="checkin-details-container">
           <p className="checkin-details">
@@ -77,21 +75,17 @@ const Checkin = () => {
         </div>
       }
       {notices.length > 0 && 
-        notices[0].type === 'error' &&
-        <Alert type={notices[0].type} message={notices[0].message} />
+        <>
+          <Alert type={notices[0].type} message={notices[0].message} />
+          <button
+            type="button" 
+            className="btn btn-secondary"
+            onClick={() => handleCloseCheckin()}
+            >
+            Close
+          </button>
+        </>
       }
-      {notices.length > 0 &&
-        notices[0].type === 'success' &&
-        <Alert type={notices[0].type} message={notices[0].message} />
-      }
-      {notices.length > 0 &&
-      <button
-        type="button" 
-        className="btn btn-secondary"
-        onClick={() => handleCloseCheckin()}
-      >
-        Close
-      </button>}
     </div>
   )
 }

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import Spinner from 'react-bootstrap/Spinner'
 
 import { closeResultDisplay, addNewAttendant } from '../reducers/attendants'
 import { sendQrcode } from '../reducers/attendants'
@@ -15,8 +14,6 @@ const RegistrationForm = () => {
   
   const notices = useSelector((store) => store.attendants.notices)
   const currentAttendantId = useSelector((store) => store.attendants.currentAttandantId)
-  const loadingStatus = useSelector((store) => store.isLoading.isLoading)
-  console.log(loadingStatus, "loadingStatus")
   const currentAttendant = useSelector((store) => store.attendants.all.find((item) => item._id === currentAttendantId))
 
   const handleRegister = (event) => {
@@ -78,10 +75,6 @@ const RegistrationForm = () => {
             className="btn btn-primary"
             >
             Register
-            <span>
-            {loadingStatus && !currentAttendant &&
-            <Spinner animation="border" size="sm" role="status" />}
-            </span>
           </button>
         </div>
       </form>
@@ -129,10 +122,6 @@ const RegistrationForm = () => {
                         onClick={() => dispatch(sendQrcode(currentAttendant._id))}
                       >
                         Send QR code
-                        <span>
-                          {loadingStatus &&
-                          <Spinner animation="border" size="sm" role="status" />}
-                          </span>
                       </button>
                     </div>
                     <div className="col-md-auto">

@@ -5,7 +5,7 @@ const initialState = {
   login: {
     accessToken: localStorage.accessToken || null,
     userId: localStorage.userId || 0,
-    errorMessage: null
+    notices: []
   }
 }
 
@@ -27,10 +27,25 @@ export const user = createSlice({
       state.login.userId = userId
       localStorage.setItem('userId', userId)
     },
-    setErrorMessage: (state, action) => {
-      const { errorMessage } = action.payload
-      state.login.errorMessage = errorMessage
-    }
+    addNotice: (state, action) => {
+      const { message, type, location } = action.payload
+
+      // Validate existance and value of type
+      const allowedTypes = ['success', 'warning', 'error']
+      if (!allowedTypes.includes(type)) {
+        throw new Error(`Allowed types for notice: ${allowedTypes.join(', ')}`)
+      }
+
+      // Validate existance and type of message
+      if (typeof message !== 'string') {
+        throw new Error('Notice message must be of type "string"')
+      }
+
+      state.login.notices = [...state.login.notices, { message, type, location}]
+    },
+    resetNotices: (state) => {
+      state.login.notices = []
+    },
   }
 })
 
@@ -55,12 +70,20 @@ export const signup = (name, email, password) => {
         })
       )
       dispatch(user.actions.setUserId({ userId: json.userId}))
-      dispatch(user.actions.setErrorMessage({ errorMessage: null}))
+      dispatch(user.actions.addNotice({
+        type: 'success',
+        message:'Successfully sign up new member',
+        location: 'signup'
+      }))
       dispatch(loadingStatus.actions.setLoading(false))
 
     })
     .catch((err) => {
-      dispatch(user.actions.setErrorMessage({ errorMessage: err.message}))
+      dispatch(user.actions.addNotice({
+        type: 'error',
+        message: err.message,
+        location: 'signup'
+      }))
     })
   }
 }
@@ -89,29 +112,29 @@ export const login = (email, password) => {
       dispatch (
         user.actions.setUserId({ userId: json.userId })
       )
-      dispatch (
-        user.actions.setErrorMessage({ errorMessage: null })
-      )
+      dispatch(user.actions.addNotice({
+        type: 'success',
+        message:'Successfully login',
+        location: 'login'
+      }))
       dispatch(loadingStatus.actions.setLoading(false))
 
     })
     .catch((err) => {
       console.log(err, "Error object")
       dispatch (logout())
-      dispatch (
-        user.actions.setErrorMessage({
-          errorMessage: err
-        })
-      )
+      dispatch(user.actions.addNotice({
+        type: 'error',
+        message: err.message,
+        location: 'login'
+      }))
     })
   }
 }
 
 export const logout = () => {
   return (dispatch) => {
-    dispatch(user.actions.setErrorMessage({
-      errorMessage: null
-    }))
+    dispatch(user.actions.resetNotices())
     dispatch(user.actions.setUserId ({ userId: 0}))
     dispatch(user.actions.setAccessToken({
       accessToken: null

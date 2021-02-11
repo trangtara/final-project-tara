@@ -2,18 +2,17 @@ import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import Spinner from 'react-bootstrap/Spinner'
 
 
 import { signup } from '../reducers/user'
+import Alert from '../components/common/Alert'
 
 
 const SignupForm = () => {
   const dispatch = useDispatch()
-  const errorMessage = useSelector((store) => 
-    store.user.login.errorMessage
+  const notices = useSelector((store) => 
+    store.user.login.notices
   )
-  const loadingStatus = useSelector((store) => store.isLoading.isLoading)
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -71,7 +70,6 @@ const SignupForm = () => {
       setShowValidations(true);
     }
   }
-//Decide whether choosing the built-in validation or the customize validation error message
   return (
     <div>
       <form
@@ -82,13 +80,13 @@ const SignupForm = () => {
             <input
             type="text"
             className="form-control"
-            id="floatingInput"
+            id="floatingNameInput"
             placeholder="username"
             value={name}
             onChange={(event) => setName(event.target.value)}
             />
             <label 
-            htmlFor="floatingInput"
+            htmlFor="floatingNameInput"
             >User Name</label>
           </div>
           <div>
@@ -129,10 +127,6 @@ const SignupForm = () => {
         className="btn btn-primary btn-sm"
         type= "submit">
           Sign up
-          <span>
-            {loadingStatus &&
-            <Spinner animation="border" size="sm" role="status" />}
-          </span>
         </button>
       </form>
       <div className="other-option">
@@ -143,7 +137,16 @@ const SignupForm = () => {
             Log in
         </Link>
       </div>
-      {errorMessage && <p>{`${errorMessage}`}</p>}
+      {notices && notices.map((notice) => (
+        <div key={notice.location}>
+          {notice.location === 'signup' && 
+          <Alert 
+          type={notice.type}
+          message={notice.message}
+          />
+        }
+        </div>
+      ))}
     </div>
   )
 }

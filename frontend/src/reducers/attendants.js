@@ -93,7 +93,7 @@ export const attendants = createSlice({
         throw new Error('attendantId must be of type "string"')
       }
 
-      state.invitesInProgress = state.invitesInProgress.filter((id) => id !== attendantId);
+      state.invitesInProgress = state.invitesInProgress.filter((id) => id !== attendantId)
     },
 
     isCheckingInAttendantId: (state, action) => {
@@ -117,7 +117,7 @@ export const attendants = createSlice({
         throw new Error('attendantId must be of type "string"')
       }
 
-      state.checkinsInProgress = state.checkinsInProgress.filter((id) => id !== attendantId);
+      state.checkinsInProgress = state.checkinsInProgress.filter((id) => id !== attendantId)
     },
 
     // Replace all attendants in state
@@ -193,12 +193,11 @@ export const addNewAttendant = ({ name, department, email }) => {
     // // Create the new attendant
     fetch(API_REGISTER_URL, params)
       .then((res) => {
-        console.log('res', res)
         if (res.ok) {
           return res.json()
         }
         // @TODO: Use error message from backend
-        throw new Error("Could not register new attendant")
+        throw new Error("Email already exists. Could not register new attendant")
       })
       .then((json) => {
         dispatch(attendants.actions.addAttendant({ attendant: json }))

@@ -131,8 +131,10 @@ app.post('/api/registration', async (req, res) => {
       department,
       created: {createdBy: req.user._id}
     }).save(newAttendant)
-console.log(newAttendant, "newAttendant")
-    if (newAttendant) {
+
+    if (!newAttendant) {
+      throw new Error ('Email already exists')
+    } else {
       const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
       // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
 

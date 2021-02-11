@@ -84,7 +84,7 @@ const SignupForm = () => {
       onSubmit={(event) => handleSignup(event)}>
       <h3>Sign up new User</h3>
         <div className="input-container">
-          <div class="form-floating mb-3">
+          <div className="form-floating mb-3">
             <input
             type="text"
             className="form-control"
@@ -94,7 +94,7 @@ const SignupForm = () => {
             onChange={(event) => setName(event.target.value)}
             />
             <label 
-            for="floatingInput"
+            htmlFor="floatingInput"
             >User Name</label>
           </div>
           <div>
@@ -111,7 +111,7 @@ const SignupForm = () => {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
-            <label for="floatingInput">User Email</label>
+            <label htmlFor="floatingInput">User Email</label>
           </div>
           <div>
             {showValidations && emailError}
@@ -119,13 +119,13 @@ const SignupForm = () => {
           <div className="form-floating mb-3">
             <input
             className="form-control"
-            type="text"
+            type="password"
             id="floatingPassword"
             placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             />
-            <label for="floatingPassword">Password</label>
+            <label htmlFor="floatingPassword">Password</label>
           </div>
           <div>
             {showValidations && passwordError}

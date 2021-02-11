@@ -15,13 +15,12 @@ const AttendantListItem = (props) => {
     attendant,
     invitesInProgress,
     checkinsInProgress,
-    // deletionsInProgress,
+    index
   } = props;
   
   const dispatch = useDispatch()
   const [isSendingInvite, setIsSendingInvite] = useState(false)
   const [isCheckingIn, setIsCheckingIn] = useState(false)
-  // const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const isSending = invitesInProgress.includes(attendant._id)
@@ -33,10 +32,6 @@ const AttendantListItem = (props) => {
     setIsCheckingIn(checkingIn)
   }, [checkinsInProgress, attendant])
 
-  // useEffect(() => {
-  //   const isDeleting = deletionsInProgress.includes(attendant._id)
-  //   setIsDeleting(isDeleting)
-  // }, [deletionsInProgress, attendant])
 
   const handleSendQrcode = () => {
     dispatch(sendQrcode(attendant._id))
@@ -52,7 +47,7 @@ const AttendantListItem = (props) => {
 
   return (
     <tr>
-      <td>{attendant._id}</td>
+      <td>{index + 1}</td>
       <td>{attendant.attendantName}</td>
       <td>{attendant.attendantEmail}</td>
       <td>{attendant.department}</td>

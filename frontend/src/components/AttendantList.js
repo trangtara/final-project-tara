@@ -4,9 +4,6 @@ import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
 
 import { fetchAllAttendants } from '../reducers/attendants'
-
-
-import LoadingIndicator from '../components/LoadingIndicator'
 import AttendantListItem from './AttendantListItem'
 
 const CHECK_IN_FILTER_VALUES = [
@@ -29,7 +26,6 @@ const AttendantList = () => {
   const [filteredAttendants, setFilteredAttendants] = useState(allAttendants)
   const invitesInProgress = useSelector((store) => store.attendants.invitesInProgress)
   const checkinsInProgress = useSelector((store) => store.attendants.checkinsInProgress)
-  // const deletionsInProgress = useSelector((store) => store.attendants.deletionsInProgress)
 
   useEffect(() => {
     dispatch(fetchAllAttendants())
@@ -87,11 +83,11 @@ const AttendantList = () => {
           </Form.Control>
         </Form.Group>
         </Form>
-        <LoadingIndicator />
+        <p>Amount of attendants: {filteredAttendants.length}</p>
       <Table responsive striped bordered hover size="sm">
         <thead>
           <tr>
-            <th>Attendant Id</th>
+            <th>#</th>
             <th>Attendant Name</th>
             <th>Email</th>
             <th>Department</th>
@@ -102,13 +98,14 @@ const AttendantList = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredAttendants && filteredAttendants.map((attendant) => (
+          {filteredAttendants && filteredAttendants.map((attendant, index) => (
             <AttendantListItem
               attendant={attendant}
               invitesInProgress={invitesInProgress}
               checkinsInProgress={checkinsInProgress}
               // deletionsInProgress={deletionsInProgress}
               key={attendant._id}
+              index={index}
             />
           ))}
         </tbody>

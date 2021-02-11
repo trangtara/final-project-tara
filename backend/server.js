@@ -226,9 +226,12 @@ app.post('/api/checkin', async (req, res) => {
         //replace res.status(404).json({errorMessage: err.message}) with "throw" to test stream reading
         throw new Error('Could not checkin. Make sure attendantId is correct')
       }
-      res.status(200).json(updatedCheckin)
     })
+    console.log("updatedCheckin", updatedCheckin)
+    res.status(200).json(updatedCheckin)
+
   } catch (err) {
+    console.log("ERROR in checkin", err)
     res.status(400).json({ errorMessage: err.message})
   }
 })

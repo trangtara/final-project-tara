@@ -5,6 +5,8 @@ export const userSchema = new mongoose.Schema ({
   name: {
     type: String,
     required: true,
+    minlenght: 2,
+    maxlength: 40
   },
   email: {
     type: String,
@@ -14,7 +16,7 @@ export const userSchema = new mongoose.Schema ({
   password: {
     type: String,
     required: true,
-    // minlength: 5
+    minlength: 5
   },
   accessToken: {
     type: String,

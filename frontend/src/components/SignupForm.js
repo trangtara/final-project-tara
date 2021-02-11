@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Spinner from 'react-bootstrap/Spinner'
@@ -23,7 +23,6 @@ const SignupForm = () => {
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   const [showValidations, setShowValidations] = useState(false);
-  const [formIsValid, setFormIsValid] = useState(false);
 
   const nameIsValid = () => {
     if (!name) {
@@ -64,14 +63,9 @@ const SignupForm = () => {
     return true;
   };
 
-  useEffect(() => {
-    const formIsValid = nameIsValid() && passwordIsValid() && emailIsValid()
-    setFormIsValid(formIsValid);
-  })
-
   const handleSignup = (event) => {
     event.preventDefault()
-    if (formIsValid) {
+    if (nameIsValid() && passwordIsValid() && emailIsValid()) {
       dispatch(signup(name, email, password));
     } else {
       setShowValidations(true);

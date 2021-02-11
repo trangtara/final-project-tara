@@ -357,7 +357,6 @@ export const sendQrcode = (attendantId) => {
         }))
       })
       .catch((err) => {
-        console.log('checkinAttendant err', err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: `${err.message}`,

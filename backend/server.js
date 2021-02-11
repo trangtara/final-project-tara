@@ -7,7 +7,7 @@ import bcrypt from 'bcrypt'
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
 import { attendantSchema } from './schema/attendantSchema'
-import { eventSchema } from './schema/eventSchema'
+// import { eventSchema } from './schema/eventSchema'
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject'
 mongoose.connect(mongoUrl, {
@@ -284,16 +284,40 @@ console.log(attendantId, "attendantId")
 })
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  const auth = {
+  //using mailgun
+  // const auth = {
+  //   auth: {
+  //     api_key: process.env.api_key,
+  //     domain: process.env.domain
+  //   }
+  // }
+  // const nodemailerMailgun = nodemailer.createTransport(mg(auth))
+
+  // const mailOptions = {
+  //   from: process.env.SENDER_EMAIL,
+  //   to: inviteeEmail,
+  //   subject: 'testing email',
+  //   text: 'hello developer',
+  //   html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
+  //   attachments: [{
+  //     filename: 'image.png',
+  //     path: inviteeQrcode,
+  //     cid: inviteeQrcode
+  //   }]
+  // }
+  // return nodemailerMailgun.sendMail(mailOptions)
+
+  //USING GMAIL
+  const transport = nodemailer.createTransport({
+    service: process.env.SERVICE,
     auth: {
-      api_key: process.env.api_key,
-      domain: process.env.domain
+      user: process.env.SENDER_EMAIL_GMAIL,
+      pass: process.env.SENDER_PASS
     }
-  }
-  const nodemailerMailgun = nodemailer.createTransport(mg(auth))
+  })
 
   const mailOptions = {
-    from: process.env.SENDER_EMAIL,
+    from: process.env.SENDER_EMAIL_GMAIL,
     to: inviteeEmail,
     subject: 'testing email',
     text: 'hello developer',
@@ -301,10 +325,10 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
     attachments: [{
       filename: 'image.png',
       path: inviteeQrcode,
-      cid: inviteeQrcode //same cid value as in the html img src
+      cid: inviteeQrcode
     }]
   }
-  return nodemailerMailgun.sendMail(mailOptions)
+  return transport.sendMail(mailOptions)
 }
 
 app.post('/api/delete', authenticateUser)

@@ -9,6 +9,11 @@ const initialState = {
   }
 }
 
+const API_URL = 'http://localhost:8080/api'
+// const API_URL = 'https://event-check-in-app.herokuapp.com/api'
+const API_SIGNUP_URL = `${API_URL}/signup`
+const API_LOGIN_URL = `${API_URL}/login`
+
 export const user = createSlice({
   name: 'user',
   initialState: initialState,
@@ -31,11 +36,9 @@ export const user = createSlice({
 })
 
 export const signup = (name, email, password) => {
-  const SIGNUP_URL = 'https://event-check-in-app.herokuapp.com/api/signup'
-  // const SIGNUP_URL = 'http://localhost:8080/api/signup'
   return (dispatch) => {
     dispatch(loadingStatus.actions.setLoading(true))
-    fetch(SIGNUP_URL, {
+    fetch(API_SIGNUP_URL, {
       method: 'POST',
       body: JSON.stringify({ name, email, password}),
       headers: { 'Content-Type': 'application/json'}
@@ -64,12 +67,10 @@ export const signup = (name, email, password) => {
 }
 
 export const login = (email, password) => {
-  const LOGIN_URL = 'https://event-check-in-app.herokuapp.com/api/login'
-  // const LOGIN_URL = 'http://localhost:8080/api/login'
   return (dispatch) => {
     dispatch(loadingStatus.actions.setLoading(true))
 
-    fetch (LOGIN_URL, {
+    fetch (API_LOGIN_URL, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
       headers: { 'Content-Type': 'application/json' },

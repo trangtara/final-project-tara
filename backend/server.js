@@ -35,7 +35,6 @@ const SERVICE_UNAVAILABLE = 'Can not connect to database'
 
 // Error message in case database is down
 app.use((req, res, next) => {
-  console.log('mongoose.connection', mongoose.connection);
   if (mongoose.connection.readyState === 1) {
     next() // To execute next get response
   } else {
@@ -62,9 +61,7 @@ userSchema.pre('save', async function (next) {
     return next()
   }
   const salt = bcrypt.genSaltSync()
-  // console.log(`PRE- password before hash: ${user.password}`)
   user.password = bcrypt.hashSync(user.password, salt)
-  // console.log(`PRE- password after  hash: ${user.password}`)
   next()
 })
 
@@ -135,7 +132,8 @@ app.post('/api/registration', async (req, res) => {
     }).save(newAttendant)
 
     if (newAttendant) {
-      const url = `http://icheckin.netlify.app/checkin/${newAttendant._id}`
+      const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
+      // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
@@ -205,7 +203,6 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 // app.post('api/checkin/:attendantId', authenticateUser)
 app.post('/api/checkin', async (req, res) => {
   const { attendantId } = req.body
-  console.log(req.body, "req.body")
 
   try {
     //is there a better way to avoid duplicate the "find" function???
@@ -224,7 +221,6 @@ app.post('/api/checkin', async (req, res) => {
       }, 
       {new: true}, (err) => {
       if(err) {
-        console.log(err, "What error is here")
         //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
 
         //replace res.status(404).json({errorMessage: err.message}) with "throw" to test stream reading
@@ -233,7 +229,6 @@ app.post('/api/checkin', async (req, res) => {
       res.status(200).json(updatedCheckin)
     })
   } catch (err) {
-    console.log('/api/checkin', err)
     res.status(400).json({ errorMessage: err.message})
   }
 })
@@ -256,6 +251,7 @@ console.log(attendantId, "attendantId")
     const inviteeQrcode = attendant.qrCode
   
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
+    console.log(emailResults, "emailResults")
 
     if(!emailResults) {
       throw new Error('Could not send email')
@@ -274,8 +270,10 @@ console.log(attendantId, "attendantId")
           res.status(200).json(results)
         }
       })
+      console.log(updateSendQrCode, "updateSendQrCode")
 
   } catch (err) {
+    console.log(err, "send email errors")
     res.status(400).json({
       errorMessage: err.message
     })
@@ -284,11 +282,11 @@ console.log(attendantId, "attendantId")
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   const transporter = nodemailer.createTransport({
+    service: 'gmail',
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      type: "OAuth2",
       user: process.env.SENDER_EMAIL,
       pass: process.env.SENDER_PASS,
     }
@@ -308,6 +306,7 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
       cid: inviteeQrcode //same cid value as in the html img src
     }]
   }
+  console.log(transporter, "transporter")
   return transporter.sendMail(mailOptions)
 }
 

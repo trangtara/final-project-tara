@@ -119,7 +119,7 @@ app.post('/api/login', async (req, res) => {
 })
 
 // attendant registration form
-app.post('/api/registration', authenticateUser)
+// app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
   

@@ -281,7 +281,7 @@ console.log(attendantId, "attendantId")
 })
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  const transporter = nodemailer.createTransport({
+  const transporter = nodemailer.createTransport("SMTP",{
     service: process.env.EMAIL_SER,
     auth: {
       user: process.env.SENDER_EMAIL,

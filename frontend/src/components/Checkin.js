@@ -22,8 +22,8 @@ const Checkin = () => {
 
   
   const notices = useSelector((store) => store.attendants.notices)
-  const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
-  // const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
+  const REACT_APP_API_URL = process.env.REACT_APP_API_URL
+  const ATTENDANTDATA = `${REACT_APP_API_URL}/attendant/${attendantId}`
 
   useEffect(() => {
     fetch(ATTENDANTDATA)

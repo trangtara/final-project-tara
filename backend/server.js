@@ -284,8 +284,8 @@ console.log(attendantId, "attendantId")
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   const transporter = nodemailer.createTransport({
-    host: 'yahoo',
-    // port: 465,
+    host: 'smtp.gmail.com',
+    port: 465,
     secure: true,
     auth: {
       type: "OAuth2",

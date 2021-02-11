@@ -283,14 +283,14 @@ console.log(attendantId, "attendantId")
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   const auth = {
     auth: {
-      api_key: process.env.api_key,
-      domain: process.env.domain
+      api_key: '219ade0adfcaf06f09f843612ace5ae5-4de08e90-1e18c6c4',
+      domain: 'https://api.mailgun.net/v3/sandbox1609928615fc4e65a6271542ec6b549d.mailgun.org'
     }
   }
   const nodemailerMailgun = nodemailer.createTransport(mg (auth))
 
   const mailOptions = {
-    from: process.env.SENDER_EMAIL,
+    from: 'tran_huyen_trang@yahoo.com',
     to: inviteeEmail,
     subject: 'testing email',
     text: 'hello developer',

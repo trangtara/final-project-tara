@@ -239,10 +239,11 @@ app.post('/api/checkin', async (req, res) => {
 // app.post('/api/sendqrcode', authenticateUser)
 app.post('/api/sendqrcode', async(req, res) => {
   const { attendantId } = req.body
-
+console.log(attendantId, "attendantId")
   try {
     const attendant = await Attendant.findById(attendantId)
     const alreadySentQrcode = attendant.isEmailSent.emailSent
+    console.log(attendant, "attendant to send email")
 
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')

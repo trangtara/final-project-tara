@@ -132,8 +132,8 @@ app.post('/api/registration', async (req, res) => {
     }).save(newAttendant)
 
     if (newAttendant) {
-      const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
-      // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
+    const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
+    // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
 
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
@@ -245,10 +245,13 @@ console.log(attendantId, "attendantId")
     if (alreadySentQrcode) {
       throw new Error('Email already sent to this attendant')
     }
+    console.log(alreadySentQrcode, "alreadySentQrcode")
 
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
+    console.log(inviteeEmail, "inviteeEmail")
+    console.log(inviteeName, "inviteeName")
   
     const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
     console.log(emailResults, "emailResults")
@@ -283,27 +286,24 @@ console.log(attendantId, "attendantId")
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   const auth = {
     auth: {
-      api_key: '219ade0adfcaf06f09f843612ace5ae5-4de08e90-1e18c6c4',
-      domain: 'https://api.mailgun.net/v3/sandbox1609928615fc4e65a6271542ec6b549d.mailgun.org'
+      api_key: process.env.api_key,
+      domain: process.env.domain
     }
   }
-  const nodemailerMailgun = nodemailer.createTransport(mg (auth))
+  const nodemailerMailgun = nodemailer.createTransport(mg(auth))
 
   const mailOptions = {
-    from: 'tran_huyen_trang@yahoo.com',
+    from: process.env.SENDER_EMAIL,
     to: inviteeEmail,
     subject: 'testing email',
     text: 'hello developer',
     html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
     attachments: [{
       filename: 'image.png',
-      height: '200px',
-      width: '200px',
       path: inviteeQrcode,
       cid: inviteeQrcode //same cid value as in the html img src
     }]
   }
-  console.log(nodemailerMailgun, "transporter")
   return nodemailerMailgun.sendMail(mailOptions)
 }
 

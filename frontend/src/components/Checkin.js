@@ -21,14 +21,9 @@ const Checkin = () => {
   const dispatch = useDispatch()
 
   
-  const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
-  // const attendant = useSelector((store) => store.attendants.all.find((item) => item._id === attendantId))
   const notices = useSelector((store) => store.attendants.notices)
-  console.log(notices, "notices")
-
-  // const checkinStatus = attendant.checkin.checkinStatus
-
-  // const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
+  const ATTENDANTDATA = `https://event-check-in-app.herokuapp.com/api/attendant/${attendantId}`
+  // const ATTENDANTDATA = `http://localhost:8080/api/attendant/${attendantId}`
 
   useEffect(() => {
     fetch(ATTENDANTDATA)

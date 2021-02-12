@@ -51,20 +51,20 @@ const Checkin = () => {
   }
   
   return (
-    <div className="container">
+    <div>
       {!attendantName && !department &&
-      <p>Use your phone camera to scan QRcodes of attendants to checkin</p>
+      <p className="row py-3">Use your phone camera to scan QRcodes of attendants to checkin</p>
       }
       {errorMessage &&
       <p>{errorMessage}</p>
       }
       {!errorMessage &&
-        <div className="checkin-details-container">
-          <p className="checkin-details">
-            <span className="checkin-details-title">Name:</span>{attendantName}
+        <div className="col">
+          <p className="row">
+            Name: {attendantName}
           </p>
-          <p className="checkin-details">
-            <span className="checkin-details-title">Department:</span>{department}
+          <p className="row">
+            Department: {department}
           </p>
           <button
             type="button"

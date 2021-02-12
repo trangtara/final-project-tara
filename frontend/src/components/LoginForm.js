@@ -22,10 +22,10 @@ const LoginForm = () => {
     dispatch(login(email, password))
   }
   return (
-    <div>
+    <div className="row mt-5">
       <form onSubmit={(event) => handleLogin(event)}>
         <h3>Login your account</h3>
-        <div className="input-container">
+        <div className="row my-3">
           <div className="form-floating mb-3">
             <input 
               type="email"
@@ -50,17 +50,17 @@ const LoginForm = () => {
           </div>
         </div>
         <button
-          className="btn btn-primary btn-sm"
+          className="btn btn-primary"
           type="submit"
         >
           Login
         </button>
       </form>
-      <div className="other-option">
-        <p>Do not have an account yet?</p>
+      <div className="row justify-content-center">
+        <p className="col-sm col-md-auto">Do not have an account yet?</p>
         <Link 
         to="/signup"
-        className="nav-link">
+        className="col-sm col-md-auto">
             Signup
         </Link>
       </div>

@@ -61,28 +61,30 @@ const AttendantList = () => {
 
   return (
     <div className="row">
-      <Form>
-        <Form.Group>
-          <Form.Label>Filter by Checkin</Form.Label>
-          <Form.Control as="select" custom onChange={(e) => setCheckinFilter(e.target.value)}>
-            {CHECK_IN_FILTER_VALUES.map((item) => (
-              <option value={item.value} key={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Filter by send QRcode</Form.Label>
-          <Form.Control as="select" custom onChange={(e) => setSendQrcodeFilter(e.target.value)}>
-            {SEND_QRCODE_FILTER_VALUE.map((item) => (
-              <option value={item.value} key={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-        </Form>
+      <div className="container-sm">
+        <Form className="row gy-2 gx-3 align-items-center justify-content-end">
+          <Form.Group className="col-md-4">
+            <Form.Label className="me-3">Filter by Checkin</Form.Label>
+            <Form.Control as="select" custom onChange={(e) => setCheckinFilter(e.target.value)}>
+              {CHECK_IN_FILTER_VALUES.map((item) => (
+                <option value={item.value} key={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group className="col-md-4">
+            <Form.Label className="me-3">Filter by send QRcode</Form.Label>
+            <Form.Control as="select" custom onChange={(e) => setSendQrcodeFilter(e.target.value)}>
+              {SEND_QRCODE_FILTER_VALUE.map((item) => (
+                <option value={item.value} key={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          </Form>
+        </div>
         <p>Amount of attendants: {filteredAttendants.length}</p>
       <Table responsive striped bordered hover size="sm">
         <thead>

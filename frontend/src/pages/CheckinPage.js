@@ -5,7 +5,7 @@ import Checkin from '../components/Checkin'
 const CheckinPage = () => {
   return (
     <div className="container">
-      <h2>Check-in information</h2>
+      <h2 className="row mt-5">Check-in information</h2>
       <Checkin />
     </div>
    )

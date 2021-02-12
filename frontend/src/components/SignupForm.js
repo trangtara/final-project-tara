@@ -71,11 +71,11 @@ const SignupForm = () => {
     }
   }
   return (
-    <div>
+    <div className="row mt-5">
       <form
       onSubmit={(event) => handleSignup(event)}>
       <h3>Sign up new User</h3>
-        <div className="input-container">
+        <div className="row my-3">
           <div className="form-floating mb-3">
             <input
             type="text"
@@ -124,15 +124,15 @@ const SignupForm = () => {
           </div>
         </div>
         <button
-        className="btn btn-primary btn-sm"
+        className="btn btn-primary"
         type= "submit">
           Sign up
         </button>
       </form>
-      <div className="other-option">
-        <p>Already has an account?</p>
+      <div className="row justify-content-center">
+        <p className="col-sm col-md-auto">Already has an account?</p>
         <Link 
-          className="nav-link"
+          className="col-sm col-md-auto"
           to="/login">
             Log in
         </Link>

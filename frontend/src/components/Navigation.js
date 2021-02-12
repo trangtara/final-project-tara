@@ -11,8 +11,12 @@ const Navigation = () => {
 
   return (
     <div>
-      <div class="row justify-content-end py-4">
-        <div class="col-auto">
+      <div className="row justify-content-around align-items-center py-4">
+        <div className="col align-self-start">
+          <h2>Welcome to Admin home page</h2>
+          <p className="other-option-line">* To activate checkin, login with your mobile phone</p>
+        </div>
+        <div className="col-auto me-auto">
           <Link to="/">
             <button
               type="button"
@@ -22,10 +26,6 @@ const Navigation = () => {
               Logout
             </button>
           </Link>
-        </div>
-        <div class="row pb-4">
-          <h2>Welcome to Admin home page</h2>
-          <p className="other-option-line">* To activate checkin, login with your mobile phone</p>
         </div>
       </div>
       

@@ -10,7 +10,7 @@ const Layout = (props) => {
   return (
     <div>
       {accessToken &&
-        <div className="container">
+        <div className="container-sm">
           <Navigation />
           {props.children}
         </div>

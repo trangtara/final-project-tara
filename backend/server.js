@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import { Base64 } from 'js-base64'
 
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
@@ -25,6 +26,7 @@ const endPointList = require('express-list-endpoints')
 const QRCode = require('qrcode')
 const nodemailer = require('nodemailer')
 const mg = require('nodemailer-mailgun-transport')
+const sgMail = require('@sendgrid/mail')
 require('dotenv').config()
 
 
@@ -254,12 +256,8 @@ app.post('/api/sendqrcode', async(req, res) => {
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
-  
-    const emailResults = await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
 
-    if(!emailResults) {
-      throw new Error('Could not send email')
-    }
+    await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
 
     const updateSendQrCode = await Attendant.findByIdAndUpdate(attendantId, 
       { isEmailSent: {
@@ -267,13 +265,13 @@ app.post('/api/sendqrcode', async(req, res) => {
         sentTime: Date.now()
       }
     },
-      {new: true}, (err, results) => {
+      {new: true}, (err) => {
         if(err) {
-          return res.status(404).json({ errorMessage: 'Could not update emailSent status'})
-        } else {
-          res.status(200).json(results)
-        }
-      })
+          throw new Error ('Could not update emailSent status')
+      }}
+    )
+    
+    res.status(200).json(updateSendQrCode)
 
   } catch (err) {
     res.status(400).json({
@@ -283,7 +281,7 @@ app.post('/api/sendqrcode', async(req, res) => {
 })
 
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  //using mailgun
+  // //using mailgun
   // const auth = {
   //   auth: {
   //     api_key: process.env.api_key,
@@ -306,28 +304,55 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
   // }
   // return nodemailerMailgun.sendMail(mailOptions)
 
-  //USING GMAIL
-  const transport = nodemailer.createTransport({
-    service: process.env.SERVICE,
-    auth: {
-      user: process.env.SENDER_EMAIL_GMAIL,
-      pass: process.env.SENDER_PASS
-    }
-  })
+  //SENDGRID
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+  const theQrCode = inviteeQrcode.replace('data:image/png;base64,', '');
 
   const mailOptions = {
-    from: process.env.SENDER_EMAIL_GMAIL,
+    from: { 'email': process.env.SENDGRID_SENDER_EMAIL, 'name': 'tara' },
     to: inviteeEmail,
     subject: 'testing email',
     text: 'hello developer',
     html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
     attachments: [{
-      filename: 'image.png',
-      path: inviteeQrcode,
-      cid: inviteeQrcode
+      filename:     'image.png',          
+      contentType:  'image/png',
+      cid:          'theqrcode',
+      content:      theQrCode
     }]
   }
-  return transport.sendMail(mailOptions)
+  return sgMail.send(mailOptions).then(() => {}, error => {
+    console.error(error);
+
+    if (error.response) {
+      console.error(error.response.body)
+      throw new Error('NOPE')
+    }
+  });
+
+  // //USING GMAIL
+  // const transport = nodemailer.createTransport({
+  //   service: process.env.SERVICE,
+  //   auth: {
+  //     user: process.env.SENDER_EMAIL_GMAIL,
+  //     pass: process.env.SENDER_PASS
+  //   }
+  // })
+
+  // const mailOptions = {
+  //   from: process.env.SENDER_EMAIL_GMAIL,
+  //   to: inviteeEmail,
+  //   subject: 'testing email',
+  //   text: 'hello developer',
+  //   html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
+  //   attachments: [{
+  //     filename: 'image.png',
+  //     path: inviteeQrcode,
+  //     cid: inviteeQrcode
+  //   }]
+  // }
+  // return transport.sendMail(mailOptions)
 }
 
 app.post('/api/delete', authenticateUser)

@@ -124,7 +124,6 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
-  console.log(req.body, "req body")
   
   try {
     const newAttendant = await new Attendant({
@@ -143,7 +142,6 @@ app.post('/api/registration', async (req, res) => {
       const qrCode = await QRCode.toDataURL(url, {
         errorCorrectionLevel: 'H'
       })
-      console.log(qrCode, "qrcode")
 
       if(!qrCode) {
         throw new Error('Could not generate qr code')
@@ -154,7 +152,6 @@ app.post('/api/registration', async (req, res) => {
         { qrCode: qrCode },
         { new: true }
       )
-      console.log(updatedAttendant, "updatedAttendant")
 
       if (!updatedAttendant) {
         throw new Error ('Could not save qr code to the database')
@@ -163,7 +160,6 @@ app.post('/api/registration', async (req, res) => {
       res.status(201).json(updatedAttendant)
     }
   } catch (err) {
-    console.log("ERRORS", err)
     //this catch err is for: missing input, or input does not meet the validation
     res.status(400).json({ errorMessage: err.message })
   }
@@ -177,7 +173,6 @@ app.get('/api/attendants', async (req, res) => {
     res.status(200).json(allAttendants)
 
   } catch (err) {
-    //Test again the senario that errors can happen
     res.status(400).json({ errorMessage: err.errors})
   }
   
@@ -202,7 +197,6 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
 
   } catch (err) {
     res.status(404).json({ 
-      //What does the err.message come from???
       errorMessage: err.message
     })
   }
@@ -213,29 +207,21 @@ app.post('/api/checkin', async (req, res) => {
   const { attendantId } = req.body
 
   try {
-    //is there a better way to avoid duplicate the "find" function???
     const attendant = await Attendant.findById(attendantId)
     const checkinStatus = attendant.checkin.checkinStatus
+    const checkinOrCheckOut = !checkinStatus
+    const checkinOrCheckoutTime = Date.now()
 
-    if(checkinStatus) {
-      throw new Error('Attendant already checkin')
+    if(!attendant) {
+      throw new Error('Could not find the attendant')
     }
-    const updatedCheckin = await Attendant.findByIdAndUpdate(attendantId, 
-      {
-        checkin: {
-          checkinStatus: true,
-          checkinTime: Date.now()
-        }
-      }, 
-      {new: true}, (err) => {
-      if(err) {
-        //either attendantId does not follow moongose format or attendantId is wrong, the error is the same. How to differentiate different error
 
-        //replace res.status(404).json({errorMessage: err.message}) with "throw" to test stream reading
-        throw new Error('Could not checkin. Make sure attendantId is correct')
-      }
-    })
-    res.status(200).json(updatedCheckin)
+    attendant.checkin.checkinStatus = checkinOrCheckOut
+    attendant.checkin.checkinOrCheckoutTime = checkinOrCheckoutTime
+
+    await attendant.save().then((savedAttendant) => savedAttendant === attendant)
+    
+    res.status(200).json(attendant)
 
   } catch (err) {
     res.status(400).json({ errorMessage: err.message})
@@ -247,24 +233,20 @@ app.post('/api/sendqrcode', async(req, res) => {
   const { attendantId } = req.body
   try {
     const attendant = await Attendant.findById(attendantId)
-    const alreadySentQrcode = attendant.isEmailSent.emailSent
-
-    if (alreadySentQrcode) {
-      throw new Error('Email already sent to this attendant')
-    }
 
     const inviteeEmail = attendant.attendantEmail
     const inviteeName = attendant.attendantName
     const inviteeQrcode = attendant.qrCode
+    const inviteeId = attendant._id
 
-    await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode })
+    await emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode, inviteeId })
 
     const updateSendQrCode = await Attendant.findByIdAndUpdate(attendantId, 
-      { isEmailSent: {
-        emailSent: true,
-        sentTime: Date.now()
-      }
-    },
+      {isEmailSent: {
+            emailSent: true,
+            sentTime: Date.now()
+          }
+      }, 
       {new: true}, (err) => {
         if(err) {
           throw new Error ('Could not update emailSent status')
@@ -280,29 +262,7 @@ app.post('/api/sendqrcode', async(req, res) => {
   }
 })
 
-function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
-  // //using mailgun
-  // const auth = {
-  //   auth: {
-  //     api_key: process.env.api_key,
-  //     domain: process.env.domain
-  //   }
-  // }
-  // const nodemailerMailgun = nodemailer.createTransport(mg(auth))
-
-  // const mailOptions = {
-  //   from: process.env.SENDER_EMAIL,
-  //   to: inviteeEmail,
-  //   subject: 'testing email',
-  //   text: 'hello developer',
-  //   html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
-  //   attachments: [{
-  //     filename: 'image.png',
-  //     path: inviteeQrcode,
-  //     cid: inviteeQrcode
-  //   }]
-  // }
-  // return nodemailerMailgun.sendMail(mailOptions)
+function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode, inviteeId }) {
 
   //SENDGRID
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
@@ -314,7 +274,7 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
     to: inviteeEmail,
     subject: 'testing email',
     text: 'hello developer',
-    html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
+    html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode, inviteeId }),
     attachments: [{
       filename:     'image.png',          
       contentType:  'image/png',
@@ -331,29 +291,27 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode }) {
     }
   });
 
-  // //USING GMAIL
-  // const transport = nodemailer.createTransport({
-  //   service: process.env.SERVICE,
-  //   auth: {
-  //     user: process.env.SENDER_EMAIL_GMAIL,
-  //     pass: process.env.SENDER_PASS
-  //   }
-  // })
-
-  // const mailOptions = {
-  //   from: process.env.SENDER_EMAIL_GMAIL,
-  //   to: inviteeEmail,
-  //   subject: 'testing email',
-  //   text: 'hello developer',
-  //   html: qrCodeEmailTemplate({ inviteeName, inviteeQrcode }),
-  //   attachments: [{
-  //     filename: 'image.png',
-  //     path: inviteeQrcode,
-  //     cid: inviteeQrcode
-  //   }]
-  // }
-  // return transport.sendMail(mailOptions)
 }
+
+app.post('/api/confirmation/:attendantId', async(req, res) => {
+  const {isComing } = req.body
+  const { attendantId } = req.params
+  try {
+    const attendant = await Attendant.findByIdAndUpdate(attendantId, {
+      isComing: {
+        isComing: isComing,
+        confirmingTime: Date.now()
+      }
+    }, (err) => {
+      if(err) {
+        throw new Error('Could not update the attendant')
+      }
+    })
+    res.status(200).json(attendant)
+  } catch(err) {
+    res.status(404).json({ errorMessage: err.message})
+  }
+})
 
 app.post('/api/delete', authenticateUser)
 app.post('/api/delete', async (req, res) => {
@@ -368,6 +326,7 @@ app.post('/api/delete', async (req, res) => {
     res.status(404).json({ errorMessage: err.message})
   }
 })
+
   
 
 // Start the server

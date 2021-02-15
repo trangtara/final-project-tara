@@ -5,7 +5,7 @@ import Layout from '../components/common/Layout'
 const Attendants = () => {
   return (
     <Layout>
-      <h3 className="row py-2 ps-2">List of all attendants</h3>
+      {/* <h3 className="text-center mt-3 mb-5">List of all attendants</h3> */}
       <AttendantList />
     </Layout>
     )

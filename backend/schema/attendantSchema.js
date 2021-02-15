@@ -40,12 +40,22 @@ export const attendantSchema = new mongoose.Schema ({
       default: 0
     }
   },
+  isComing: {
+    isComing: {
+      type: Boolean,
+      default: false
+    },
+    confirmingTime: {
+      type: Date,
+      default: 0
+    }
+  },
   checkin: {
     checkinStatus:{
       type: Boolean,
       default: false
     },
-    checkinTime: {
+    checkinOrCheckoutTime: {
       type: Date,
       default: 0
     }

@@ -60,7 +60,7 @@ const LoginForm = () => {
         <p className="col-sm col-md-auto">Do not have an account yet?</p>
         <Link 
         to="/signup"
-        className="col-sm col-md-auto">
+        className="col-sm col-md-auto text-decoration-none">
             Signup
         </Link>
       </div>

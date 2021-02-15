@@ -132,7 +132,7 @@ const SignupForm = () => {
       <div className="row justify-content-center">
         <p className="col-sm col-md-auto">Already has an account?</p>
         <Link 
-          className="col-sm col-md-auto"
+          className="col-sm col-md-auto text-decoration-none"
           to="/login">
             Log in
         </Link>

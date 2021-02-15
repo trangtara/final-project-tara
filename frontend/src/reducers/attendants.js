@@ -7,6 +7,7 @@ const API_SENDQRCODE_URL = `${API_URL}/sendqrcode`
 const API_DELETEATTENDANT_URL = `${API_URL}/delete`
 const API_ALLATTENDANTS_URL = `${API_URL}/attendants`
 const API_CHECKIN = `${API_URL}/checkin`
+const API_CONFIRMATION_URL = `${API_URL}/confirmation`
 
 const initialState = {
   all: [],
@@ -24,7 +25,6 @@ export const attendants = createSlice({
     // Add a newly created attendant to state
     addAttendant: (state, action) => {
       const { attendant } = action.payload
-      console.log("addNewAttendant", attendant)
 
       // Validate payload
       if (!attendant || !attendant._id) {
@@ -41,7 +41,6 @@ export const attendants = createSlice({
     // Remove an attendant based on id
     removeAttendantById: (state, action) => {
       const { attendantId } = action.payload
-      console.log("removeById", attendantId, action.payload, "action payload")
 
       // Validate payload
       if (typeof attendantId !== 'string') {
@@ -55,7 +54,6 @@ export const attendants = createSlice({
     // Set a notice to display in UI
     addNotice: (state, action) => {
       const { message, type, location } = action.payload
-      console.log("addNotice", message, type, location)
       
       // Validate existance and value of type
       const allowedTypes = ['success', 'warning', 'error']
@@ -74,7 +72,6 @@ export const attendants = createSlice({
 
     isSendingInviteToAttendantId: (state, action) => {
       const { attendantId } = action.payload
-      console.log('isSendingInviteToAttendantId', attendantId)
       
       // Validate payload
       if (typeof attendantId !== 'string') {
@@ -86,7 +83,6 @@ export const attendants = createSlice({
 
     doneSendingInviteToAttendantId: (state, action) => {
       const { attendantId } = action.payload
-      console.log('doneSendingInviteToAttendantId', attendantId)
       
       // Validate payload
       if (typeof attendantId !== 'string') {
@@ -98,7 +94,6 @@ export const attendants = createSlice({
 
     isCheckingInAttendantId: (state, action) => {
       const { attendantId } = action.payload
-      console.log('isCheckingInAttendantId', attendantId)
       
       // Validate payload
       if (typeof attendantId !== 'string') {
@@ -110,7 +105,6 @@ export const attendants = createSlice({
 
     doneCheckingInAttendantId: (state, action) => {
       const { attendantId } = action.payload
-      console.log('doneCheckingInAttendantId', attendantId)
       
       // Validate payload
       if (typeof attendantId !== 'string') {
@@ -147,7 +141,6 @@ export const attendants = createSlice({
     // Update an attendant by passing an id and the props to update 
     updateAttendant: (state, action) => {
       const { updatedAttendant } = action.payload
-      console.log('updatedAttendant', updatedAttendant)
 
       // Validate payload
       if (!updatedAttendant || !updatedAttendant._id) {
@@ -221,10 +214,8 @@ export const addNewAttendant = ({ name, department, email }) => {
 }
 
 export const sendQrcode = (attendantId) => {
-  console.log(attendantId, "attendantId in sendqrCode thunk")
     return(dispatch, getState) => {
       dispatch(attendants.actions.isSendingInviteToAttendantId({ attendantId }))
-
       const accessToken = getState().user.login.accessToken
       const params = {
         method: 'POST',
@@ -239,10 +230,9 @@ export const sendQrcode = (attendantId) => {
         if(res.ok) {
           return res.json()
         }
-        throw new Error (`Email already sent to ${attendantId}`)
+        throw new Error (`Could not find the attendant with id ${attendantId}`)
       })
       .then((json) => {
-        console.log('Successfully send qrcode', json)
         dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
         dispatch(attendants.actions.addNotice({
           type: 'success',
@@ -286,12 +276,11 @@ export const sendQrcode = (attendantId) => {
         dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
-        console.log(err, "delete erro")
-        // dispatch(attendants.actions.addNotice({
-        //   type: 'error',
-        //   message: err.message,
-        //   location: 'qrcode'
-        // }))
+        dispatch(attendants.actions.addNotice({
+          type: 'error',
+          message: err.message,
+          location: 'list-delete'
+        }))
       })
     }
   }
@@ -330,7 +319,7 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  export const checkinAttendant = (attendantId) => {
+  export const checkinCheckOutAttendant = (attendantId) => {
     return(dispatch) => {
       dispatch(attendants.actions.isCheckingInAttendantId({ attendantId }))
       const params = {
@@ -343,7 +332,8 @@ export const sendQrcode = (attendantId) => {
       fetch(API_CHECKIN, params)
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Attendant already checkin')
+          //How to get the errors from backend???
+          throw new Error('Could not find the attendant')
         }
         return res.json()
       })
@@ -351,7 +341,7 @@ export const sendQrcode = (attendantId) => {
         dispatch(attendants.actions.updateAttendant({ updatedAttendant: data }))
         dispatch(attendants.actions.addNotice({
           type: 'success',
-          message: `Successfully check in the attendant with email ${data.attendantEmail}`,
+          message: `Successfully updated`,
           location: 'list'
         }))
       })
@@ -368,17 +358,53 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  export const confirmation = ({ attendantId, isComing }) => {
+
+    return(dispatch, getState) => {
+      const accessToken = getState().user.login.accessToken
+      const URL = `${API_CONFIRMATION_URL}/${attendantId}`
+      const params = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken
+        },
+        body: JSON.stringify({ attendantId, isComing})
+      }
+      fetch(URL, params)
+      .then((res) => {
+        if(!res.ok) {
+          throw new Error('Could not update the confirmation')
+        } else {
+          return res.json()
+        }
+      })
+      .then((json) => {
+        dispatch(attendants.actions.addNotice({
+          type: 'success',
+          message: 'Successfully update the confirmation',
+          location: 'confirmation'
+        }))
+      })
+      .catch((err) => {
+        dispatch(attendants.actions.addNotice({
+          type: 'error',
+          message: err.message,
+          location: 'confirmation'
+        }))
+      })
+    }
+  }
+
   export const closeResultDisplay = () => {
     return (dispatch) => {
-      console.log("resetnew")
       dispatch(attendants.actions.resetNew())
       dispatch(attendants.actions.resetNotices())
     }
   }
 
-  export const closeCheckin = () => {
+  export const closeWindow = () => {
     return(dispatch) => {
-      console.log("what is here")
       dispatch(attendants.actions.resetNotices())
     }
   }

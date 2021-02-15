@@ -121,7 +121,6 @@ export const login = (email, password) => {
 
     })
     .catch((err) => {
-      console.log(err, "Error object")
       dispatch (logout())
       dispatch(user.actions.addNotice({
         type: 'error',

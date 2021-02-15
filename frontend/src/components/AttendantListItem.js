@@ -7,7 +7,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import { 
   deleteAttendant,
   sendQrcode,
-  checkinAttendant 
+  checkinCheckOutAttendant 
 } from '../reducers/attendants'
 
 const AttendantListItem = (props) => {
@@ -21,6 +21,9 @@ const AttendantListItem = (props) => {
   const dispatch = useDispatch()
   const [isSendingInvite, setIsSendingInvite] = useState(false)
   const [isCheckingIn, setIsCheckingIn] = useState(false)
+  const [sendQrCode, setSendQrCode] = useState('Send QrCode')
+  const CONFIRM_CHECKIN = 'Are you sure you want to check IN this attendant?'
+  const CONFIRM_CHECKOUT = 'Are you sure you want to check OUT this attendant?'
 
   useEffect(() => {
     const isSending = invitesInProgress.includes(attendant._id)
@@ -35,10 +38,11 @@ const AttendantListItem = (props) => {
 
   const handleSendQrcode = () => {
     dispatch(sendQrcode(attendant._id))
+    setSendQrCode('Re-send QrCode')
   }
 
-  const handleCheckin = () => {
-    dispatch(checkinAttendant(attendant._id))
+  const handleCheckinCheckout = () => {
+    dispatch(checkinCheckOutAttendant(attendant._id))
   }
 
   const handleDelete = () => {
@@ -55,6 +59,13 @@ const AttendantListItem = (props) => {
         {attendant.qrCode 
           ? <img className="qrcode-image"src={attendant.qrCode} alt="qrCode"/>
           : <p className="qrcode-image">N/A</p>
+        }
+      </td>
+      <td>
+        {attendant.isComing.isComing
+        ?  <svg xmlns="http://www.w3.org/2000/svg" width="25" fill="#000fff" viewBox="0 0 512 512"><path d="M435.848 83.466L172.804 346.51l-96.652-96.652c-4.686-4.686-12.284-4.686-16.971 0l-28.284 28.284c-4.686 4.686-4.686 12.284 0 16.971l133.421 133.421c4.686 4.686 12.284 4.686 16.971 0l299.813-299.813c4.686-4.686 4.686-12.284 0-16.971l-28.284-28.284c-4.686-4.686-12.284-4.686-16.97 0z"/>
+        </svg>
+        : "NO"
         }
       </td>
       <td>
@@ -83,22 +94,28 @@ const AttendantListItem = (props) => {
           type="button"
           onClick={() => window.confirm('Are you sure you want to email the Qr code to this attendant?') && handleSendQrcode()}
         >
-        {!attendant.isEmailSent.emailSent
-          ? "Send QRcode"
-          : "Resend QRcode"
-        }
+        {sendQrCode}
         </Dropdown.Item>
+        {attendant.checkin.checkinStatus &&
         <Dropdown.Item
           as="button"
           className="btn btn-primary btn-sm" 
           type="button"
-          onClick={() => window.confirm('Are you sure you want to check in this attendant?') && handleCheckin()}
-        >
-          {attendant.checkin.checkinStatus
-            ? "UN-checkin"
-            : "Checkin"
-          }
+          onClick={() => window.confirm(`${CONFIRM_CHECKOUT}`) && handleCheckinCheckout()}
+         >
+           Check OUT
         </Dropdown.Item>
+        }
+        {!attendant.checkin.checkinStatus &&
+          <Dropdown.Item
+          as="button"
+          className="btn btn-primary btn-sm" 
+          type="button"
+          onClick={() => window.confirm(`${CONFIRM_CHECKIN}`) && handleCheckinCheckout()}
+         >
+           Check IN
+        </Dropdown.Item>
+        }
         <Dropdown.Item
           as="button"
           className="btn btn-danger btn-sm"

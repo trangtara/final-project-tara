@@ -3,7 +3,6 @@ import Layout from '../components/common/Layout'
 import RegistrationForm from '../components/RegistrationForm'
 
 const Registration = () => {
-  //const errorMessage = useSelector((store) => store.attendant.attendant.errorMessage)
   return (
     <Layout>
       <RegistrationForm/>

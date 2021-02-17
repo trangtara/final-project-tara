@@ -5,8 +5,6 @@ import { useParams } from 'react-router-dom'
 import { checkinCheckOutAttendant, closeResultDisplay } from '../reducers/attendants'
 import Alert from '../components/common/Alert'
 
-import '../styling/checkin.css'
-
 const Checkin = () => {
   const { attendantId } = useParams()
   const [ attendantName, setAttendantName ] = useState('')

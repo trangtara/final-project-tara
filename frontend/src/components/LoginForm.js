@@ -6,9 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { login } from '../reducers/user'
 import Alert from '../components/common/Alert'
-import '../styling/form.css'
-import '../styling/pageWrapper.css'
-
 
 const LoginForm = () => {
   const dispatch = useDispatch()

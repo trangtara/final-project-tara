@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { loadingStatus } from './loadingStatus'
 
 const initialState = {
   login: {
@@ -52,7 +51,6 @@ export const user = createSlice({
 //sign up new user
 export const signup = (name, email, password) => {
   return (dispatch) => {
-    dispatch(loadingStatus.actions.setLoading(true))
     fetch(API_SIGNUP_URL, {
       method: 'POST',
       body: JSON.stringify({ name, email, password}),
@@ -78,7 +76,6 @@ export const signup = (name, email, password) => {
         message:'Successfully sign up new member',
         location: 'signup'
       }))
-      dispatch(loadingStatus.actions.setLoading(false))
 
     })
     .catch((err) => {
@@ -94,8 +91,6 @@ export const signup = (name, email, password) => {
 //login user
 export const login = (email, password) => {
   return (dispatch) => {
-    dispatch(loadingStatus.actions.setLoading(true))
-
     fetch (API_LOGIN_URL, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -121,8 +116,6 @@ export const login = (email, password) => {
         message:'Successfully login',
         location: 'login'
       }))
-      dispatch(loadingStatus.actions.setLoading(false))
-
     })
     .catch((err) => {
       dispatch (logout())

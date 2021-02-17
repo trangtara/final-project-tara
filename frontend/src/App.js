@@ -19,7 +19,6 @@ import Attendants from './pages/Attendants'
 
 const reducer = combineReducers({ 
   user: user.reducer, 
-  // attendant: attendant.reducer,
   attendants: attendants.reducer,
 })
 

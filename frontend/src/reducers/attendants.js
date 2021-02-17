@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { loadingStatus } from './loadingStatus'
 
 const API_URL = process.env.REACT_APP_API_URL
 const API_REGISTER_URL = `${API_URL}/registration`
@@ -164,7 +163,6 @@ export const addNewAttendant = ({ name, department, email }) => {
   return (dispatch, getState) => {
     dispatch(attendants.actions.resetNotices())
     dispatch(attendants.actions.resetNew())
-    dispatch(loadingStatus.actions.setLoading(true))
     const accessToken = getState().user.login.accessToken
     const params = {
       method: 'POST',
@@ -197,7 +195,6 @@ export const addNewAttendant = ({ name, department, email }) => {
           message: `Successfully inserted attendant with email: ${json.attendantEmail}`,
           location: 'registration'
         }))
-        dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
         dispatch(attendants.actions.addNotice({
@@ -257,7 +254,6 @@ export const sendQrcode = (attendantId) => {
   //remove attendant from the database
   export const deleteAttendant = (attendantId) => {
     return(dispatch, getState) => {
-      dispatch(loadingStatus.actions.setLoading(true))
       const accessToken = getState().user.login.accessToken
       const params = {
         method: 'POST',
@@ -279,7 +275,6 @@ export const sendQrcode = (attendantId) => {
           throw new Error(json.errorMessage)
         }
         dispatch(attendants.actions.removeAttendantById({attendantId: json._id}))
-        dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
         dispatch(attendants.actions.addNotice({
@@ -294,7 +289,6 @@ export const sendQrcode = (attendantId) => {
   //fetch all attendants created by loged in user
   export const fetchAllAttendants = () => {
     return(dispatch, getState) => {
-      dispatch(loadingStatus.actions.setLoading(true))
       const accessToken = getState().user.login.accessToken
       const params = {
         method: 'GET',
@@ -317,7 +311,6 @@ export const sendQrcode = (attendantId) => {
         dispatch(attendants.actions.replaceAll({  
           attendants: json
         }))
-        dispatch(loadingStatus.actions.setLoading(false))
       })
       .catch((err) => {
         dispatch(attendants.actions.addNotice({

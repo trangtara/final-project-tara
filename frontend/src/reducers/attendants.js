@@ -340,12 +340,12 @@ export const sendQrcode = (attendantId) => {
         if(res.ok) {
           return res.json()
         }
-        throw new Error ('Could not checkin attendant. Make user id is corrent')
+        throw new Error ('Could not update attendant. Make user id is corrent')
       })
       .then((json) => {
-        if (json && json.errorMessage === 'string') {
-          throw new Error(json.errorMessage)
-        }
+        // if (json && json.errorMessage === 'string') {
+        //   throw new Error(json.errorMessage)
+        // }
         dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
         dispatch(attendants.actions.addNotice({
           type: 'success',

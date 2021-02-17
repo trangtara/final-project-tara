@@ -36,7 +36,6 @@ const Checkin = () => {
       setIsCheckin(json.checkin.checkinStatus)
     })
     .catch((err) => {
-      console.log("error in checkin component", err)
       setErrorMessage(err.message)
     })
   }, [ATTENDANTDATA, errorMessage])
@@ -70,7 +69,7 @@ const Checkin = () => {
           </p>
           {!isCheckin && !clearInfoMessage &&
             <>
-              <p className="bg-info py-2 ps-2 auto fw-bold">Do you want to check IN this attendant? </p>
+              <p className="text-info py-2 ps-2 auto fw-bold">Do you want to check IN this attendant? </p>
               <button
                 type="button"
                 className="btn auto btn-primary mt-3"

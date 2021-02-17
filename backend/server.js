@@ -3,7 +3,6 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
-import { Base64 } from 'js-base64'
 
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
@@ -23,8 +22,6 @@ const app = express()
 
 const endPointList = require('express-list-endpoints')
 const QRCode = require('qrcode')
-const nodemailer = require('nodemailer')
-const mg = require('nodemailer-mailgun-transport')
 const sgMail = require('@sendgrid/mail')
 require('dotenv').config()
 

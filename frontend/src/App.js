@@ -5,7 +5,6 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit'
 
 import { user } from './reducers/user'
 import { attendants } from './reducers/attendants'
-import { loadingStatus } from './reducers/loadingStatus'
 
 import Home from './pages/Home'
 import LogIn from './pages/Login'
@@ -22,7 +21,6 @@ const reducer = combineReducers({
   user: user.reducer, 
   // attendant: attendant.reducer,
   attendants: attendants.reducer,
-  isLoading: loadingStatus.reducer
 })
 
 

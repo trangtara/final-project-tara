@@ -28,7 +28,7 @@ const Navigation = () => {
           </Link>
         </div>
       </div>
-      <ul className="nav nav-tabs mb-4">
+      <ul className="nav fw-bold nav-tabs mb-4">
         <NavigationItem path="/" currentPath={location.pathname} label="Home" />
         <NavigationItem path="/registration" currentPath={location.pathname} label="Register new attendants" />
         <NavigationItem path="/attendants" currentPath={location.pathname} label="Manage attendants" />

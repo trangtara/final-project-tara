@@ -57,8 +57,8 @@ const AttendantListItem = (props) => {
       <td>{attendant.department}</td>
       <td>
         {attendant.qrCode 
-          ? <img className="qrcode-image"src={attendant.qrCode} alt="qrCode"/>
-          : <p className="qrcode-image">N/A</p>
+          ? <img className="img-fluid" src={attendant.qrCode} alt="qrCode"/>
+          : <p>N/A</p>
         }
       </td>
       <td>

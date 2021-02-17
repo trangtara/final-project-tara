@@ -180,7 +180,12 @@ export const addNewAttendant = ({ name, department, email }) => {
     }
 
     fetch(API_REGISTER_URL, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } 
+        throw new Error('Could not register attendant. Email already exists')
+      })
       .then((json) => {
         if (json && typeof json.errorMessage === 'string') {
           throw new Error(json.errorMessage)
@@ -220,7 +225,12 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId })
       }
       fetch(API_SENDQRCODE_URL, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+        return res.json()
+        }
+        throw new Error('Could not send the qrCode')
+      })
       .then((json) => {
         if(json && typeof json.errorMessage === 'string') {
           throw new Error(json.errorMessage)
@@ -258,7 +268,12 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId })
       }
       fetch(API_DELETEATTENDANT_URL, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if(res.ok) {
+          return res.json()
+        }
+        throw new Error('Could not delete the attendant')
+      })
       .then((json) => {
         if(json && typeof json.errorMessage === 'string') {
           throw new Error(json.errorMessage)
@@ -289,7 +304,12 @@ export const sendQrcode = (attendantId) => {
         }
       }
       fetch(API_ALLATTENDANTS_URL, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res) {
+          return res.json()
+        }
+        throw new Error('Could not fetch attendant list')
+      })
       .then((json) => {
         if (json && typeof json.message === 'string') {
           throw new Error(json.message)
@@ -323,9 +343,13 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId }),
       }
       fetch(API_CHECKIN, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if(res.ok) {
+          return res.json()
+        }
+        throw new Error ('Could not checkin attendant. Make user id is corrent')
+      })
       .then((json) => {
-        console.log("json in checkin", json)
         if (json && json.errorMessage === 'string') {
           throw new Error(json.errorMessage)
         }
@@ -337,7 +361,6 @@ export const sendQrcode = (attendantId) => {
         }))
       })
       .catch((err) => {
-        console.log("Error in checkin", err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: `${err.message}`,
@@ -362,9 +385,13 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId, isComing})
       }
       fetch(URL, params)
-      .then((res) => res.json())
+      .then((res) => {
+        if(res.ok) {
+          return res.json()
+        }
+        throw new Error('Could not update your confirmation')
+      })
       .then((json) => {
-        console.log("json in confirm", json)
         if (json && json.errorMessage === 'string') {
           throw new Error(json.errorMessage)
         }
@@ -375,7 +402,6 @@ export const sendQrcode = (attendantId) => {
         }))
       })
       .catch((err) => {
-        console.log("erro in confirm", err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: err.message,

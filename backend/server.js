@@ -82,18 +82,24 @@ app.get('/', (req, res) => {
 // Signup a user
 app.post('/api/signup', async (req, res) => {
   const { name, email, password } = req.body
-  try {  
-    const user = await new User({
-      name,
-      email,
-      password
-    }).save()
-    res.status(201)
-    .json({ userId: user._id, accessToken: user.accessToken })
+  try {
+    const existingUser = await User.findOne({ email })
+    if(!existingUser) {
+      const user = await new User({
+        name,
+        email,
+        password
+      }).save()
+      res.status(201)
+      .json({ userId: user._id, accessToken: user.accessToken })
+    } else {
+      throw new Error('User already exists. Please sign up with different email address')
+    }
+    
   } catch (err) {
     res
       .status(400)
-      .json({ errorMessage: 'Could not create user', errors: err.errors })
+      .json({ errorMessage: err.message })
   }
 })
 
@@ -106,13 +112,11 @@ app.post('/api/login', async (req, res) => {
       res.status(200).json({ userId: user._id, accessToken: user.accessToken })
     } else {
       res.status(400).json({
-        notFound: true,
-        message: 'Username and/or password is not correct'
+        errorMessage: 'Username and/or password is not correct'
       })
     }
   } catch (err) {
     res.status(404).json({
-      notFound: true,
       errorMessage: 'Oops! Something goes wrong. Try again later!'
     })
   }

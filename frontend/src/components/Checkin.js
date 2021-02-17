@@ -55,18 +55,18 @@ const Checkin = () => {
   return (
     <div className="mt-3 row justify-content-center">
       {!attendantName && !department &&
-      <p className="py-3 text-primary fw-bold">Use your phone camera to scan QRcodes of attendants to checkin</p>
+      <p className="py-3 fs-5 text-white text-center fw-bold">Use your phone camera to scan QRcodes of attendants to checkin</p>
       }
       {errorMessage &&
       <p className="row ps-2 text-warning bg-secondary">{errorMessage}</p>
       }
       {!errorMessage &&
         <div className="col-6 text-center">
-          <p>
-            Name: <span className="text-primary ps-3 fs-5 text-uppercase">{attendantName}</span>
+          <p className="text-white">
+            Name: <span className="text-primary ps-3 fs-4 fw-bold text-uppercase">{attendantName}</span>
           </p>
-          <p>
-            Department: <span className="text-primary ps-3 fs-5 text-uppercase">{department}</span>
+          <p className="text-white">
+            Department: <span className="text-primary ps-3 fs-4 fw-bold text-uppercase">{department}</span>
           </p>
           {!isCheckin && !clearInfoMessage &&
             <>
@@ -81,10 +81,10 @@ const Checkin = () => {
           }
           {isCheckin && !clearInfoMessage &&
             <>
-              <p className="row bg-info py-2 ps-2 fw-bold">Already check in. Do you want to check OUT this attendant?</p>
+              <p className="row text-warning py-2 ps-2 fw-bold">Already check in. Do you want to check OUT this attendant?</p>
               <button
                 type="button"
-                className="btn btn-primary mt-3"
+                className="btn auto btn-primary mt-3"
                 onClick={() => handleCheckinCheckout()}>
                   CHECK-OUT
               </button>
@@ -94,12 +94,12 @@ const Checkin = () => {
       }
       {notices.length > 0 && 
       <>
-          <div className="row mt-3">
+          <div className="text-center mt-3">
             <Alert type={notices[0].type} message={notices[0].message} />
           </div>
           <button
-          type="button" 
-          className="btn btn-secondary"
+          type="button " 
+          className="btn btn-info col-2 mx-auto"
           onClick={() => handleCloseCheckin()}
           >
           Close

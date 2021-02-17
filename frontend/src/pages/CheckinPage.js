@@ -9,8 +9,8 @@ const CheckinPage = () => {
 
   return (
     <div className="container bg-light bg-gradient">
-      <div className="row justify-content-md-center border border-secondary p-5 border-2 rounded">
-        <h2 className="row mb-2">Check-in information</h2>
+      <div className="row justify-content-center border p-5 border-2 rounded">
+        <h2 className="mb-2 text-center">Check-in information</h2>
         <Checkin />
       </div>
       {!accessToken && <Redirect to="/" />}

@@ -112,8 +112,8 @@ const AttendantList = () => {
           </Form.Group>
           </Form>
         </div>
-        <p className="col-auto bg-info ms-3 rounded fw-bold">Total attendants: {filteredAttendants.length}</p>
-      <Table className="mt-3" responsive striped bordered hover size="sm">
+        <p className="col-auto mt-5 mb-1 bg-info ms-3 rounded fw-bold">Total attendants: {filteredAttendants.length}</p>
+      <Table responsive striped bordered hover size="sm">
         <thead>
           <tr>
             <th>#</th>
@@ -128,6 +128,7 @@ const AttendantList = () => {
           </tr>
         </thead>
         <tbody>
+          
           {filteredAttendants && filteredAttendants.map((attendant, index) => (
             <AttendantListItem
               attendant={attendant}
@@ -139,6 +140,9 @@ const AttendantList = () => {
           ))}
         </tbody>
       </Table>
+      {filteredAttendants.length === 0 &&
+      <p className="text-center mt-3 fst-italic" >You have no attendants in the list</p>
+      }
     </div>
   )
 }

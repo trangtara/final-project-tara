@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { closeResultDisplay, addNewAttendant } from '../reducers/attendants'
@@ -23,61 +23,86 @@ const RegistrationForm = () => {
       name: attendantName,
       email: attendantEmail
     }))
-    setAttendantName('')
-    setDepartment('')
-    setAttendantEmail('')
   }
 
+  useEffect(() => {
+    if (currentAttendantId) {
+      setAttendantName('')
+      setAttendantEmail('')
+      setDepartment('')
+    }
+  }, [currentAttendantId])
+
   return (
-    <div>
-      <form onSubmit={(event) => handleRegister(event)}>
-        <h3>Register new attendant</h3>
-        <p>Please fill in the information of the event attendant. Input with a * are mandatory</p>
-        <div className="container">
-          <div className="form-floating mb-3">
-            <input
-              required
-              type="text"
-              className="form-control"
-              id="floatingInput"
-              placeholder="Attendant's fullname"
-              value={attendantName}
-              onChange={(event) => setAttendantName(event.target.value)}
-            />
-            <label htmlFor="floatingInput">Full name of attendant *</label>
-          </div>
-          <div className="form-floating mb-3">
-            <input
-              required 
-              type="email"
-              className="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-              value={attendantEmail}
-              onChange={(event) => setAttendantEmail(event.target.value)}
-            />
-            <label htmlFor="floatingInput">Email of attendant *</label>
-          </div>
-          <div className="form-floating mb-3">
-            <input
-            className="form-control"
-            type="text"
-            id="floatingInput"
-            placeholder="Department"
-            value={department}
-            onChange={(event) => setDepartment(event.target.value)}
-            />
-            <label htmlFor="floatingInput">Department</label>
-          </div>
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            >
-            Register
-          </button>
+    <div className="container mt-5">
+      <div className="row justify-content-start">
+        <div className="col col-sm-12 col-md-12 col-lg-8">
+          <form onSubmit={(event) => handleRegister(event)} >
+            <h3>Register new attendant</h3>
+            <p className="text-secondary mt-3 fst-italic">Please fill in the information of the event attendant. All fields are madatory</p>
+            <div className="col justify-items-start mt-5">
+              <div className="form-floating mb-3">
+                <input
+                  required
+                  type="text"
+                  className="form-control"
+                  id="floatingInput"
+                  placeholder="Attendant's fullname"
+                  value={attendantName}
+                  onChange={(event) => setAttendantName(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingInput"
+                  className="text-secondary"
+                >
+                  Full name of attendant
+                </label>
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                  required 
+                  type="email"
+                  className="form-control"
+                  id="floatingInput"
+                  placeholder="name@example.com"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  value={attendantEmail}
+                  onChange={(event) => setAttendantEmail(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingInput"
+                  className="text-secondary"
+                >
+                  Email of attendant
+                </label>
+              </div>
+              <div className="form-floating mb-3">
+                <input
+                required
+                className="form-control"
+                type="text"
+                id="floatingInput"
+                placeholder="Department"
+                value={department}
+                onChange={(event) => setDepartment(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingInput"
+                  className="text-secondary"
+                >
+                  Department
+                </label>
+              </div>
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                >
+                Register
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
       <div>
         {notices && notices.map((notice) => (
           <div key={notice.location}>

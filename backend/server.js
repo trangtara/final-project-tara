@@ -8,7 +8,6 @@ import { Base64 } from 'js-base64'
 import { qrCodeEmailTemplate } from './emailTemplate'
 import { userSchema } from './schema/userSchema'
 import { attendantSchema } from './schema/attendantSchema'
-// import { eventSchema } from './schema/eventSchema'
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost/finalProject'
 mongoose.connect(mongoUrl, {
@@ -38,7 +37,7 @@ const SERVICE_UNAVAILABLE = 'Can not connect to database'
 // Error message in case database is down
 app.use((req, res, next) => {
   if (mongoose.connection.readyState === 1) {
-    next() // To execute next get response
+    next() 
   } else {
     res.status(503).send({ error: SERVICE_UNAVAILABLE })
   }
@@ -69,8 +68,8 @@ userSchema.pre('save', async function (next) {
 
 const User = mongoose.model('User', userSchema )
 const Attendant = mongoose.model('Attendant', attendantSchema)
-// const Event = mongoose.model('Event', eventSchema)
 
+//display all the endpoints
 app.get('/', (req, res) => {
   if (!res) {
     res
@@ -82,7 +81,6 @@ app.get('/', (req, res) => {
 
 // Signup a user
 app.post('/api/signup', async (req, res) => {
-  //what is the difference btw putting this const inside the try{}
   const { name, email, password } = req.body
   try {  
     const user = await new User({
@@ -120,12 +118,16 @@ app.post('/api/login', async (req, res) => {
   }
 })
 
-// attendant registration form
+// register new attendant and generate qrcode
 app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
-  
   try {
+    const attendant = await Attendant.findOne({ attendantEmail })
+    if (attendant) {
+      throw new Error('Could not save attendant. Email already exists')
+    }
+
     const newAttendant = await new Attendant({
       attendantName,
       attendantEmail,
@@ -134,7 +136,7 @@ app.post('/api/registration', async (req, res) => {
     }).save(newAttendant)
 
     if (!newAttendant) {
-      throw new Error ('Email already exists')
+      throw new Error ('Could not save attendants')
     } else {
       const url = `https://icheckin.netlify.app/checkin/${newAttendant._id}`
       // const url = `http://localhost:8080/api/checkin/${newAttendant._id}`
@@ -160,16 +162,16 @@ app.post('/api/registration', async (req, res) => {
       res.status(201).json(updatedAttendant)
     }
   } catch (err) {
-    //this catch err is for: missing input, or input does not meet the validation
     res.status(400).json({ errorMessage: err.message })
   }
 })
 
-
-// app.get('api/attendants', authenticateUser)
+//get all attendants created by one logged in user
+app.get('/api/attendants', authenticateUser)
 app.get('/api/attendants', async (req, res) => {
+
   try {
-    const allAttendants = await Attendant.find().sort({'created.createdAt': 'desc'})
+    const allAttendants = await Attendant.find({'created.createdBy': req.user._id}).sort({'created.createdAt': 'desc'})
     res.status(200).json(allAttendants)
 
   } catch (err) {
@@ -178,6 +180,7 @@ app.get('/api/attendants', async (req, res) => {
   
 })
 
+//fetch one attendant
 // app.get('/api/attendant/:attendantId', authenticateUser)
 app.get('/api/attendant/:attendantId', async (req, res) => {
   const { attendantId } = req.params
@@ -202,7 +205,8 @@ app.get('/api/attendant/:attendantId', async (req, res) => {
   }
 })
 
-// app.post('api/checkin/:attendantId', authenticateUser)
+//check in /checkout attendant
+app.post('/api/checkin', authenticateUser)
 app.post('/api/checkin', async (req, res) => {
   const { attendantId } = req.body
 
@@ -228,7 +232,8 @@ app.post('/api/checkin', async (req, res) => {
   }
 })
 
-// app.post('/api/sendqrcode', authenticateUser)
+//send qrcode to attendant's email
+app.post('/api/sendqrcode', authenticateUser)
 app.post('/api/sendqrcode', async(req, res) => {
   const { attendantId } = req.body
   try {
@@ -262,9 +267,9 @@ app.post('/api/sendqrcode', async(req, res) => {
   }
 })
 
+//Email qrcode to attendant using Sendgrid
 function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode, inviteeId }) {
 
-  //SENDGRID
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
   const theQrCode = inviteeQrcode.replace('data:image/png;base64,', '');
@@ -293,6 +298,7 @@ function emailQrcode({ inviteeEmail, inviteeName, inviteeQrcode, inviteeId }) {
 
 }
 
+//attendants to confirm their participation to the event
 app.post('/api/confirmation/:attendantId', async(req, res) => {
   const {isComing } = req.body
   const { attendantId } = req.params
@@ -313,6 +319,7 @@ app.post('/api/confirmation/:attendantId', async(req, res) => {
   }
 })
 
+//remove attendants from the database
 app.post('/api/delete', authenticateUser)
 app.post('/api/delete', async (req, res) => {
   const { attendantId } = req.body

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { checkinCheckOutAttendant, closeWindow } from '../reducers/attendants'
+import { checkinCheckOutAttendant, closeResultDisplay } from '../reducers/attendants'
 import Alert from '../components/common/Alert'
 
 import '../styling/checkin.css'
@@ -30,11 +30,13 @@ const Checkin = () => {
       return res.json()
     })
     .then((json) => {
+      console.log("json in fetch attendant", json)
       setAttendantName(json.attendantName)
       setDepartment(json.department)
       setIsCheckin(json.checkin.checkinStatus)
     })
     .catch((err) => {
+      console.log("error in checkin component", err)
       setErrorMessage(err.message)
     })
   }, [ATTENDANTDATA, errorMessage])
@@ -46,20 +48,20 @@ const Checkin = () => {
   const handleCloseCheckin = () => {
     setDepartment(null)
     setAttendantName(null)
-    dispatch(closeWindow())
+    dispatch(closeResultDisplay())
     setClearInfoMessage(true)
   }
   
   return (
-    <div className="mt-3">
+    <div className="mt-3 row justify-content-center">
       {!attendantName && !department &&
-      <p className="row py-3 text-primary fw-bold">Use your phone camera to scan QRcodes of attendants to checkin</p>
+      <p className="py-3 text-primary fw-bold">Use your phone camera to scan QRcodes of attendants to checkin</p>
       }
       {errorMessage &&
-      <p className="row ps-2 text-warning bg-dark">{errorMessage}</p>
+      <p className="row ps-2 text-warning bg-secondary">{errorMessage}</p>
       }
       {!errorMessage &&
-        <div className="col">
+        <div className="col-6 text-center">
           <p>
             Name: <span className="text-primary ps-3 fs-5 text-uppercase">{attendantName}</span>
           </p>
@@ -68,10 +70,10 @@ const Checkin = () => {
           </p>
           {!isCheckin && !clearInfoMessage &&
             <>
-              <p className="row bg-info py-2 ps-2 fw-bold">Do you want to check IN this attendant? </p>
+              <p className="bg-info py-2 ps-2 auto fw-bold">Do you want to check IN this attendant? </p>
               <button
                 type="button"
-                className="btn btn-primary mt-3"
+                className="btn auto btn-primary mt-3"
                 onClick={() => handleCheckinCheckout()}>
                   CHECK-IN
               </button>

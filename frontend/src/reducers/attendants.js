@@ -15,7 +15,6 @@ const initialState = {
   notices: [],
   invitesInProgress: [],
   checkinsInProgress: [],
-  // deletionsInProgress: [],
 }
 
 export const attendants = createSlice({
@@ -127,7 +126,7 @@ export const attendants = createSlice({
       state.all = attendants
     },
 
-    // Reset the notice whenever you perform a new action, to hide messages from previous actions
+    // Reset the notice whenever performing a new action, to hide messages from previous actions
     resetNotices: (state) => {
       state.notices = []
     },
@@ -162,13 +161,10 @@ export const attendants = createSlice({
 
 // Add new attendant from registration form
 export const addNewAttendant = ({ name, department, email }) => {
-  
   return (dispatch, getState) => {
-    // Reset state
     dispatch(attendants.actions.resetNotices())
     dispatch(attendants.actions.resetNew())
     dispatch(loadingStatus.actions.setLoading(true))
-    // Get accessToken for authorization
     const accessToken = getState().user.login.accessToken
     const params = {
       method: 'POST',
@@ -183,16 +179,13 @@ export const addNewAttendant = ({ name, department, email }) => {
       })
     }
 
-    // // Create the new attendant
     fetch(API_REGISTER_URL, params)
-      .then((res) => {
-        if (res.ok) {
-          return res.json()
-        }
-        // @TODO: Use error message from backend
-        throw new Error("Email already exists. Could not register new attendant")
-      })
+      .then((res) => res.json())
       .then((json) => {
+        if (json && typeof json.errorMessage === 'string') {
+          throw new Error(json.errorMessage)
+        }
+
         dispatch(attendants.actions.addAttendant({ attendant: json }))
         dispatch(attendants.actions.addNotice({
           type: 'success',
@@ -213,6 +206,7 @@ export const addNewAttendant = ({ name, department, email }) => {
   }
 }
 
+//email Qrcode to attendant
 export const sendQrcode = (attendantId) => {
     return(dispatch, getState) => {
       dispatch(attendants.actions.isSendingInviteToAttendantId({ attendantId }))
@@ -226,13 +220,11 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId })
       }
       fetch(API_SENDQRCODE_URL, params)
-      .then((res) => {
-        if(res.ok) {
-          return res.json()
-        }
-        throw new Error (`Could not find the attendant with id ${attendantId}`)
-      })
+      .then((res) => res.json())
       .then((json) => {
+        if(json && typeof json.errorMessage === 'string') {
+          throw new Error(json.errorMessage)
+        }
         dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
         dispatch(attendants.actions.addNotice({
           type: 'success',
@@ -252,6 +244,7 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  //remove attendant from the database
   export const deleteAttendant = (attendantId) => {
     return(dispatch, getState) => {
       dispatch(loadingStatus.actions.setLoading(true))
@@ -265,13 +258,11 @@ export const sendQrcode = (attendantId) => {
         body: JSON.stringify({ attendantId })
       }
       fetch(API_DELETEATTENDANT_URL, params)
-      .then((res) => {
-        if (res.ok) {
-          return res.json()
-        }
-        throw new Error('Could not find the attendant')
-      })
+      .then((res) => res.json())
       .then((json) => {
+        if(json && typeof json.errorMessage === 'string') {
+          throw new Error(json.errorMessage)
+        }
         dispatch(attendants.actions.removeAttendantById({attendantId: json._id}))
         dispatch(loadingStatus.actions.setLoading(false))
       })
@@ -285,6 +276,7 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  //fetch all attendants created by loged in user
   export const fetchAllAttendants = () => {
     return(dispatch, getState) => {
       dispatch(loadingStatus.actions.setLoading(true))
@@ -297,13 +289,11 @@ export const sendQrcode = (attendantId) => {
         }
       }
       fetch(API_ALLATTENDANTS_URL, params)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Could not fetch the attendant list')
-        }
-        return res.json()
-      })
+      .then((res) => res.json())
       .then((json) => {
+        if (json && typeof json.message === 'string') {
+          throw new Error(json.message)
+        }
         dispatch(attendants.actions.replaceAll({  
           attendants: json
         }))
@@ -319,26 +309,27 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  //check in and check out attendant after scanning the qr code
   export const checkinCheckOutAttendant = (attendantId) => {
-    return(dispatch) => {
+    return(dispatch, getState) => {
       dispatch(attendants.actions.isCheckingInAttendantId({ attendantId }))
+      const accessToken = getState().user.login.accessToken
       const params = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': accessToken
         },
         body: JSON.stringify({ attendantId }),
       }
       fetch(API_CHECKIN, params)
-      .then((res) => {
-        if (!res.ok) {
-          //How to get the errors from backend???
-          throw new Error('Could not find the attendant')
+      .then((res) => res.json())
+      .then((json) => {
+        console.log("json in checkin", json)
+        if (json && json.errorMessage === 'string') {
+          throw new Error(json.errorMessage)
         }
-        return res.json()
-      })
-      .then((data) => {
-        dispatch(attendants.actions.updateAttendant({ updatedAttendant: data }))
+        dispatch(attendants.actions.updateAttendant({ updatedAttendant: json }))
         dispatch(attendants.actions.addNotice({
           type: 'success',
           message: `Successfully updated`,
@@ -346,6 +337,7 @@ export const sendQrcode = (attendantId) => {
         }))
       })
       .catch((err) => {
+        console.log("Error in checkin", err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: `${err.message}`,
@@ -358,28 +350,24 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  //attendants confirm their participation to the event
   export const confirmation = ({ attendantId, isComing }) => {
-
     return(dispatch, getState) => {
-      const accessToken = getState().user.login.accessToken
       const URL = `${API_CONFIRMATION_URL}/${attendantId}`
       const params = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': accessToken
         },
         body: JSON.stringify({ attendantId, isComing})
       }
       fetch(URL, params)
-      .then((res) => {
-        if(!res.ok) {
-          throw new Error('Could not update the confirmation')
-        } else {
-          return res.json()
-        }
-      })
+      .then((res) => res.json())
       .then((json) => {
+        console.log("json in confirm", json)
+        if (json && json.errorMessage === 'string') {
+          throw new Error(json.errorMessage)
+        }
         dispatch(attendants.actions.addNotice({
           type: 'success',
           message: 'Successfully update the confirmation',
@@ -387,6 +375,7 @@ export const sendQrcode = (attendantId) => {
         }))
       })
       .catch((err) => {
+        console.log("erro in confirm", err)
         dispatch(attendants.actions.addNotice({
           type: 'error',
           message: err.message,
@@ -396,6 +385,7 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
+  //clear the form
   export const closeResultDisplay = () => {
     return (dispatch) => {
       dispatch(attendants.actions.resetNew())
@@ -403,8 +393,3 @@ export const sendQrcode = (attendantId) => {
     }
   }
 
-  export const closeWindow = () => {
-    return(dispatch) => {
-      dispatch(attendants.actions.resetNotices())
-    }
-  }

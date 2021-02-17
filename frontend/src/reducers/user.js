@@ -49,6 +49,7 @@ export const user = createSlice({
   }
 })
 
+//sign up new user
 export const signup = (name, email, password) => {
   return (dispatch) => {
     dispatch(loadingStatus.actions.setLoading(true))
@@ -88,6 +89,7 @@ export const signup = (name, email, password) => {
   }
 }
 
+//login user
 export const login = (email, password) => {
   return (dispatch) => {
     dispatch(loadingStatus.actions.setLoading(true))
@@ -131,6 +133,7 @@ export const login = (email, password) => {
   }
 }
 
+//logout user
 export const logout = () => {
   return (dispatch) => {
     dispatch(user.actions.resetNotices())

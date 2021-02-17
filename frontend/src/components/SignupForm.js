@@ -71,82 +71,101 @@ const SignupForm = () => {
     }
   }
   return (
-    <div className="row mt-5">
-      <form
-      onSubmit={(event) => handleSignup(event)}>
-      <h3>Sign up new User</h3>
-        <div className="row my-3">
-          <div className="form-floating mb-3">
-            <input
-            type="text"
-            className="form-control"
-            id="floatingNameInput"
-            placeholder="username"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            />
-            <label 
-            htmlFor="floatingNameInput"
-            >User Name</label>
-          </div>
-          <div>
-            {showValidations && nameError}
-          </div>
-          <div className="form-floating mb-3">
-            <input
-              required 
-              type="email"
-              className="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <label htmlFor="floatingInput">User Email</label>
-          </div>
-          <div>
-            {showValidations && emailError}
-          </div>
-          <div className="form-floating mb-3">
-            <input
-            className="form-control"
-            type="password"
-            id="floatingPassword"
-            placeholder="Password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            />
-            <label htmlFor="floatingPassword">Password</label>
-          </div>
-          <div>
-            {showValidations && passwordError}
-          </div>
-        </div>
-        <button
-        className="btn btn-primary"
-        type= "submit">
-          Sign up
-        </button>
-      </form>
+    <div className="container mt-5">
       <div className="row justify-content-center">
-        <p className="col-sm col-md-auto">Already has an account?</p>
-        <Link 
-          className="col-sm col-md-auto text-decoration-none"
-          to="/login">
-            Log in
-        </Link>
-      </div>
-      {notices && notices.map((notice) => (
-        <div key={notice.location}>
-          {notice.location === 'signup' && 
-          <Alert 
-          type={notice.type}
-          message={notice.message}
-          />
-        }
+        <div className="col col-sm-12 col-md-8 col-lg-8">
+          <form
+            onSubmit={(event) => handleSignup(event)}>
+            <h2 className="text-center text-primary">Sign up new User</h2>
+            <div className="mt-5">
+              <div className="form-floating mb-3 form-group">
+                <input
+                type="text"
+                className="border-1 border-secondary rounded form-control"
+                id="floatingNameInput"
+                placeholder="userName"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingNameInput"
+                  className="text-secondary"
+                >
+                  User Name
+                </label>
+                <small id="floatingNameInput" className="form-text text-muted fst-italic">Name must be between 2-40 characters.</small>
+              </div>
+              <p className="text-danger fst-italic">
+                {showValidations && nameError}
+              </p>
+              <div className="form-floating mb-3 form-group">
+                <input
+                  required 
+                  type="email"
+                  className="border-1 border-secondary rounded form-control"
+                  id="floatingEmailInput"
+                  placeholder="name@example.com"
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingEmailInput"
+                  className="text-secondary"
+                >User Email
+                </label>
+                <small id="floatingEmailInput" className="form-text text-muted fst-italic">i.e name@example.com</small>
+              </div>
+              <p className="text-danger fst-italic">
+                {showValidations && emailError}
+              </p>
+              <div className="form-floating mb-3 form-group">
+                <input
+                className="border-1 border-secondary rounded form-control"
+                type="password"
+                id="floatingPassword"
+                placeholder="Password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                />
+                <label 
+                  htmlFor="floatingPassword" 
+                  className="text-secondary"
+                >
+                  Password
+                </label>
+                <small id="floatingPassword" className="form-text text-muted fst-italic">Password must has more than 5 characters</small>
+              </div>
+              <p className="text-danger fst-italic">
+                {showValidations && passwordError}
+              </p>
+            </div>
+            <button
+            className="btn btn-primary"
+            type= "submit">
+              Sign up
+            </button>
+          </form>
+          {notices && notices.map((notice) => (
+            <div className="mt-3" key={notice.location}>
+              {notice.location === 'signup' && 
+              <Alert 
+              type={notice.type}
+              message={notice.message}
+              />
+            }
+            </div>
+          ))}
+          <div className="row justify-content-center">
+            <p className="col-sm col-md-auto">Already has an account?</p>
+            <Link 
+              className="col-sm col-md-auto fw-bold text-decoration-none"
+              to="/login">
+                Log in
+            </Link>
+          </div>
         </div>
-      ))}
+      </div>
     </div>
   )
 }

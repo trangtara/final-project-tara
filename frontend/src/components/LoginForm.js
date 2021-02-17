@@ -22,59 +22,63 @@ const LoginForm = () => {
     dispatch(login(email, password))
   }
   return (
-    <div className="row mt-5">
-      <form onSubmit={(event) => handleLogin(event)}>
-        <h3>Login your account</h3>
-        <div className="row my-3">
-          <div className="form-floating mb-3">
-            <input 
-              type="email"
-              className="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-            <label htmlFor="floatingInput">Email address</label>
-          </div>
-          <div className="form-floating">
-            <input 
-              type="password"
-              className="form-control"
-              id="floatingPassword"
-              placeholder="Password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)} 
-            />
-            <label htmlFor="floatingPassword">Password</label>
-          </div>
-        </div>
-        <button
-          className="btn btn-primary"
-          type="submit"
-        >
-          Login
-        </button>
-      </form>
+    <div className="container mt-5">
       <div className="row justify-content-center">
-        <p className="col-sm col-md-auto">Do not have an account yet?</p>
-        <Link 
-        to="/signup"
-        className="col-sm col-md-auto text-decoration-none">
-            Signup
-        </Link>
-      </div>
-      {notices && notices.map((notice) => (
-        <div key={notice.location}>
-          {notice.location === 'login' && 
-          <Alert 
-          type={notice.type}
-          message={notice.message}
-          />
+        <div className="col col-sm-12 col-md-8 col-lg-8">
+          <form onSubmit={(event) => handleLogin(event)}>
+            <h2 className="text-center text-primary">Login your account</h2>
+            <div className="mt-5">
+              <div className="form-floating mb-3">
+                <input 
+                  type="email"
+                  className="border-1 border-secondary rounded form-control"
+                  id="floatingInput"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+                <label htmlFor="floatingInput" className="text-secondary">Email address</label>
+              </div>
+              <div className="form-floating">
+                <input 
+                  type="password"
+                  className="border-1 border-secondary rounded form-control"
+                  id="floatingPassword"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)} 
+                />
+                <label htmlFor="floatingPassword" className="text-secondary">Password</label>
+              </div>
+            </div>
+            <button
+              className="btn mt-3 btn-primary"
+              type="submit"
+            >
+              Login
+            </button>
+          </form>
+          {notices && notices.map((notice) => (
+            <div className="mt-3" key={notice.location}>
+              {notice.location === 'login' && 
+              <Alert 
+              type={notice.type}
+              message={notice.message}
+              />
+              }
+            </div>
+            ))
           }
+          <div className="row justify-content-center">
+            <p className="col-sm col-md-auto">Do not have an account yet?</p>
+            <Link 
+            to="/signup"
+            className="col-sm col-md-auto text-decoration-none fw-bold">
+                Signup
+            </Link>
+          </div>
         </div>
-        ))
-      }
+      </div>
     </div>
     )
 }

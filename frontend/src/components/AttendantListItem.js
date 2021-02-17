@@ -92,7 +92,7 @@ const AttendantListItem = (props) => {
           as="button"
           className="btn btn-primary btn-sm" 
           type="button"
-          onClick={() => window.confirm('Are you sure you want to email the Qr code to this attendant?') && handleSendQrcode()}
+          onClick={() => window.confirm('NOTICE: For security reason, email service is disabled on public repo. Database will still be updated when you send email to the attendant. Do you want to send email now?') && handleSendQrcode()}
         >
         {sendQrCode}
         </Dropdown.Item>

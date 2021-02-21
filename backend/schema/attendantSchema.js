@@ -20,7 +20,7 @@ export const attendantSchema = new mongoose.Schema ({
   created: {
     createdAt: {
       type: Date,
-      default: Date.now
+      default: Date.now()
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

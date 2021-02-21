@@ -123,6 +123,7 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/registration', authenticateUser)
 app.post('/api/registration', async (req, res) => {
   const { attendantName, attendantEmail, department } = req.body
+  console.log("requser", req.user)
   try {
     const attendant = await Attendant.findOne({ attendantEmail })
     if (attendant) {
@@ -178,7 +179,6 @@ app.get('/api/attendants', async (req, res) => {
   } catch (err) {
     res.status(400).json({ errorMessage: err.errors})
   }
-  
 })
 
 //fetch one attendant

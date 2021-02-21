@@ -60,6 +60,7 @@ export const signup = (name, email, password) => {
       if (!res.ok) {
         throw new Error('Could not sign up new user. Email aleady exist')
       }
+      return res.json()
     })
     .then ((json) => {
       if(json && json.errorMessage === 'string') {

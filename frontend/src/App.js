@@ -12,7 +12,6 @@ import SignUp from './pages/SignUp'
 import Registration from './pages/Registration'
 import ConfirmationPage from './pages/ConfirmationPage'
 import CheckinPage from './pages/CheckinPage'
-import NewEvent from './pages/NewEvent'
 import Attendants from './pages/Attendants'
 
 
@@ -33,7 +32,6 @@ export const App = () => {
           <Route path="/" exact component={Home} />
           <Route path="/login" exact component={LogIn} />
           <Route path="/signup" exact component={SignUp} />
-          <Route path="/newevent" exact component={NewEvent} />
           <Route path="/registration" exact component={Registration} />
           <Route path="/checkin/:attendantId" exact component={CheckinPage} />
           <Route path="/confirmation/:attendantId" exact component={ConfirmationPage} />
